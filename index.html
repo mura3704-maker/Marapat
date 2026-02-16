@@ -13,71 +13,41 @@
         .card { background: white; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
         .tab-content { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .filter-checkbox:checked + label {
-            background-color: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-        }
-
-        .type-toggle.active {
-            background-color: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-        }
-
-        .rating-tab.active {
-            border-bottom: 3px solid #3b82f6;
-            color: #3b82f6;
-        }
-
-        #details-modal {
-            backdrop-filter: blur(4px);
-            transition: all 0.3s ease;
-        }
-        
-        .safe-scroll-area {
-            max-height: 70vh;
-            overflow-y: auto;
-            padding-bottom: 2rem;
-        }
-        
-        /* Category Badge Colors */
-        .cat-master { background-color: #ef4444; } /* Шебер - Қызыл */
-        .cat-researcher { background-color: #f59e0b; } /* Зерттеуші - Сарғылт */
-        .cat-expert { background-color: #10b981; } /* Сарапшы - Жасыл */
-        .cat-moderator { background-color: #3b82f6; } /* Модератор - Көк */
-        .cat-teacher { background-color: #64748b; } /* Педагог - Сұр */
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-900">
 
 <div id="app" class="flex flex-col md:flex-row min-h-screen">
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-white border-b p-4 flex justify-between items-center">
+        <h1 class="font-bold text-blue-600">МАРАПАТ</h1>
+        <button onclick="toggleMobileMenu()" class="text-slate-600"><i class="fas fa-bars"></i></button>
+    </div>
+
     <!-- Sidebar -->
     <aside id="sidebar" class="w-full md:w-64 bg-white border-r border-slate-200 p-4 space-y-4 hidden md:block">
-        <div class="flex items-center space-x-2 px-4 py-6">
+        <div class="hidden md:flex items-center space-x-2 px-4 py-6">
             <div class="bg-blue-600 p-2 rounded-lg text-white">
                 <i class="fas fa-award text-2xl"></i>
             </div>
             <h1 class="text-xl font-bold text-slate-800">МАРАПАТ</h1>
         </div>
         
-        <nav class="space-y-1">
-            <button onclick="switchTab('dashboard')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 text-slate-600 hover:bg-slate-100 active transition-all">
-                <i class="fas fa-chart-pie w-5"></i>
-                <span>Басты бет</span>
+        <nav class="space-y-1" id="main-nav">
+            <button onclick="switchTab('dashboard')" class="sidebar-link active w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 text-slate-600 hover:bg-slate-100 transition-all">
+                <i class="fas fa-chart-pie w-5"></i><span>Басты бет</span>
             </button>
             <button onclick="switchTab('database')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 text-slate-600 hover:bg-slate-100 transition-all">
-                <i class="fas fa-database w-5"></i>
-                <span>Базаны толтыру</span>
+                <i class="fas fa-database w-5"></i><span>Базаны толтыру</span>
             </button>
             <button onclick="switchTab('add-achievement')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 text-slate-600 hover:bg-slate-100 transition-all">
-                <i class="fas fa-plus-circle w-5"></i>
-                <span>Жетістік қосу</span>
+                <i class="fas fa-plus-circle w-5"></i><span>Жетістік қосу</span>
             </button>
             <button onclick="switchTab('ratings')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 text-slate-600 hover:bg-slate-100 transition-all">
-                <i class="fas fa-trophy w-5"></i>
-                <span>Рейтингтер</span>
+                <i class="fas fa-trophy w-5"></i><span>Рейтингтер</span>
+            </button>
+            <button onclick="switchTab('settings')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 text-slate-600 hover:bg-slate-100 transition-all">
+                <i class="fas fa-cog w-5"></i><span>Баптаулар</span>
             </button>
         </nav>
     </aside>
@@ -85,65 +55,33 @@
     <main class="flex-1 p-4 md:p-8 overflow-y-auto">
         <!-- Dashboard -->
         <section id="tab-dashboard" class="tab-content space-y-6 pb-12">
-            <!-- Main Stats -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="card p-6 border-l-4 border-blue-500">
                     <p class="text-sm font-medium text-slate-500">Оқушылар</p>
-                    <h3 id="stat-students" class="text-2xl font-bold mt-1">...</h3>
+                    <h3 id="stat-students" class="text-2xl font-bold mt-1">0</h3>
                 </div>
                 <div class="card p-6 border-l-4 border-green-500">
                     <p class="text-sm font-medium text-slate-500">Мұғалімдер</p>
-                    <h3 id="stat-teachers" class="text-2xl font-bold mt-1">...</h3>
+                    <h3 id="stat-teachers" class="text-2xl font-bold mt-1">0</h3>
                 </div>
                 <div class="card p-6 border-l-4 border-purple-500">
                     <p class="text-sm font-medium text-slate-500">Жетістіктер</p>
-                    <h3 id="stat-achievements" class="text-2xl font-bold mt-1">...</h3>
+                    <h3 id="stat-achievements" class="text-2xl font-bold mt-1">0</h3>
                 </div>
                 <div class="card p-6 border-l-4 border-orange-500">
                     <p class="text-sm font-medium text-slate-500">Мектептер</p>
-                    <h3 id="stat-schools" class="text-2xl font-bold mt-1">...</h3>
-                </div>
-            </div>
-
-            <!-- Teacher Categories Stats -->
-            <div class="card p-6">
-                <h4 class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wider flex items-center">
-                    <i class="fas fa-user-tie mr-2 text-blue-500"></i> Мұғалімдердің санаты бойынша статистика
-                </h4>
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <div class="bg-red-50 p-4 rounded-xl border border-red-100">
-                        <p class="text-[10px] font-bold text-red-600 uppercase">Шебер</p>
-                        <h5 id="count-cat-sheber" class="text-xl font-black text-red-700">0</h5>
-                    </div>
-                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
-                        <p class="text-[10px] font-bold text-amber-600 uppercase">Зерттеуші</p>
-                        <h5 id="count-cat-zertteushi" class="text-xl font-black text-amber-700">0</h5>
-                    </div>
-                    <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
-                        <p class="text-[10px] font-bold text-emerald-600 uppercase">Сарапшы</p>
-                        <h5 id="count-cat-sarapshy" class="text-xl font-black text-emerald-700">0</h5>
-                    </div>
-                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                        <p class="text-[10px] font-bold text-blue-600 uppercase">Модератор</p>
-                        <h5 id="count-cat-moderator" class="text-xl font-black text-blue-700">0</h5>
-                    </div>
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                        <p class="text-[10px] font-bold text-slate-500 uppercase">Педагог</p>
-                        <h5 id="count-cat-pedagog" class="text-xl font-black text-slate-600">0</h5>
-                    </div>
+                    <h3 id="stat-schools" class="text-2xl font-bold mt-1">0</h3>
                 </div>
             </div>
 
             <div class="card overflow-hidden">
-                <div class="px-6 py-4 border-b border-slate-100 font-bold flex justify-between items-center text-slate-800">
-                    <span>Соңғы жетістіктер</span>
-                </div>
+                <div class="px-6 py-4 border-b border-slate-100 font-bold text-slate-800">Соңғы жетістіктер</div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-bold">
                             <tr>
                                 <th class="px-6 py-3">Иесі / Жарыс</th>
-                                <th class="px-6 py-3">Мектеп / Түрі</th>
+                                <th class="px-6 py-3">Мектеп</th>
                                 <th class="px-6 py-3">Деңгей</th>
                                 <th class="px-6 py-3 text-right">Балл</th>
                                 <th class="px-6 py-3 text-center">Әрекет</th>
@@ -155,620 +93,341 @@
             </div>
         </section>
 
-        <!-- Database Management -->
+        <!-- Database -->
         <section id="tab-database" class="tab-content hidden space-y-6 pb-12">
-            <h2 class="text-2xl font-bold text-slate-800">Базаны басқару</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+             <h2 class="text-2xl font-bold text-slate-800">Базаны басқару</h2>
+             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Schools -->
-                <div class="card p-6 flex flex-col h-[600px]">
-                    <h3 class="font-bold mb-4 flex items-center text-blue-600 text-lg">
-                        <i class="fas fa-school mr-2"></i> Мектептер
-                    </h3>
+                <div class="card p-6 flex flex-col h-[500px]">
+                    <h3 class="font-bold mb-4 text-blue-600"><i class="fas fa-school mr-2"></i> Мектептер</h3>
                     <div class="flex space-x-2 mb-4">
-                        <input id="in-school" type="text" placeholder="Мектеп атауы" class="flex-1 border p-2 rounded text-sm outline-none focus:ring-1 focus:ring-blue-500">
-                        <button onclick="saveToCloud('schools')" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-blue-700">Қосу</button>
+                        <input id="in-school" type="text" placeholder="Мектеп аты" class="flex-1 border p-2 rounded text-sm outline-none focus:border-blue-500">
+                        <button onclick="saveLocal('schools')" class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">Қосу</button>
                     </div>
-                    <div class="flex-1 overflow-y-auto pr-2">
-                        <ul id="list-schools" class="space-y-2"></ul>
-                    </div>
+                    <ul id="list-schools" class="flex-1 overflow-y-auto space-y-1 text-sm"></ul>
                 </div>
-
                 <!-- Teachers -->
-                <div class="card p-6 flex flex-col h-[600px]">
-                    <h3 class="font-bold mb-4 flex items-center text-green-600 text-lg">
-                        <i class="fas fa-chalkboard-teacher mr-2"></i> Мұғалімдер
-                    </h3>
-                    <div class="space-y-3 mb-4">
-                        <select id="sel-school-teacher" class="w-full border p-2 rounded text-sm outline-none focus:ring-1 focus:ring-green-500"></select>
-                        <input id="in-teacher-name" type="text" placeholder="Аты-жөні" class="w-full border p-2 rounded text-sm outline-none focus:ring-1 focus:ring-green-500">
-                        <select id="sel-teacher-subj" class="w-full border p-2 rounded text-sm outline-none focus:ring-1 focus:ring-green-500">
-                            <option value="" disabled selected>Пәнін таңдаңыз</option>
-                            <option value="Математика">Математика</option>
-                            <option value="Физика">Физика</option>
-                            <option value="Информатика">Информатика</option>
-                            <option value="Биология">Биология</option>
-                            <option value="Химия">Химия</option>
-                            <option value="География">География</option>
-                            <option value="Қазақ тілі мен әдебиеті">Қазақ тілі мен әдебиеті</option>
-                            <option value="Орыс тілі мен әдебиеті">Орыс тілі мен әдебиеті</option>
-                            <option value="Ағылшын тілі">Ағылшын тілі</option>
-                            <option value="Қазақстан тарихы">Қазақстан тарихы</option>
-                            <option value="Дүниежүзі тарихы">Дүниежүзі тарихы</option>
-                            <option value="Құқық негіздері">Құқық негіздері</option>
-                            <option value="Көркем еңбек">Көркем еңбек</option>
-                            <option value="Дене шынықтыру">Дене шынықтыру</option>
-                            <option value="Алғашқы әскери дайындық">Алғашқы әскери дайындық</option>
-                            <option value="Музыка">Музыка</option>
-                            <option value="Бастауыш сынып мұғалімі">Бастауыш сынып мұғалімі</option>
-                        </select>
-                        <select id="sel-teacher-cat" class="w-full border p-2 rounded text-sm outline-none focus:ring-1 focus:ring-green-500 bg-green-50">
-                            <option value="" disabled selected>Санатын таңдаңыз</option>
-                            <option value="Шебер">Педагог-шебер</option>
-                            <option value="Зерттеуші">Педагог-зерттеуші</option>
-                            <option value="Сарапшы">Педагог-сарапшы</option>
-                            <option value="Модератор">Педагог-модератор</option>
+                <div class="card p-6 flex flex-col h-[500px]">
+                    <h3 class="font-bold mb-4 text-green-600"><i class="fas fa-chalkboard-teacher mr-2"></i> Мұғалімдер</h3>
+                    <div class="space-y-2 mb-4">
+                        <select id="sel-school-teacher" class="w-full border p-2 rounded text-sm"></select>
+                        <input id="in-teacher-name" type="text" placeholder="Аты-жөні" class="w-full border p-2 rounded text-sm outline-none focus:border-green-500">
+                        <select id="sel-teacher-cat" class="w-full border p-2 rounded text-sm">
+                            <option value="Шебер">Шебер</option>
+                            <option value="Зерттеуші">Зерттеуші</option>
+                            <option value="Сарапшы">Сарапшы</option>
+                            <option value="Модератор">Модератор</option>
                             <option value="Педагог">Педагог</option>
                         </select>
-                        <button onclick="saveToCloud('teachers')" class="w-full bg-green-600 text-white py-2 rounded text-sm font-semibold hover:bg-green-700">Сақтау</button>
+                        <button onclick="saveLocal('teachers')" class="w-full bg-green-600 text-white py-2 rounded text-sm hover:bg-green-700">Сақтау</button>
                     </div>
-                    <div class="flex-1 overflow-y-auto pr-2">
-                        <ul id="list-teachers" class="space-y-2"></ul>
-                    </div>
+                    <ul id="list-teachers" class="flex-1 overflow-y-auto space-y-1 text-sm"></ul>
                 </div>
-
                 <!-- Students -->
-                <div class="card p-6 flex flex-col h-[600px]">
-                    <h3 class="font-bold mb-4 flex items-center text-purple-600 text-lg">
-                        <i class="fas fa-user-graduate mr-2"></i> Оқушылар
-                    </h3>
-                    <div class="space-y-3 mb-4">
-                        <select id="sel-school-student" class="w-full border p-2 rounded text-sm outline-none focus:ring-1 focus:ring-purple-500"></select>
-                        <input id="in-student-name" type="text" placeholder="Аты-жөні" class="w-full border p-2 rounded text-sm outline-none focus:ring-1 focus:ring-purple-500">
-                        <select id="sel-student-class" class="w-full border p-2 rounded text-sm outline-none focus:ring-1 focus:ring-purple-500">
-                            <option value="" disabled selected>Сыныбын таңдаңыз</option>
-                            <option value="1">1-сынып</option>
-                            <option value="2">2-сынып</option>
-                            <option value="3">3-сынып</option>
-                            <option value="4">4-сынып</option>
-                            <option value="5">5-сынып</option>
-                            <option value="6">6-сынып</option>
-                            <option value="7">7-сынып</option>
-                            <option value="8">8-сынып</option>
-                            <option value="9">9-сынып</option>
-                            <option value="10">10-сынып</option>
-                            <option value="11">11-сынып</option>
-                        </select>
-                        <button onclick="saveToCloud('students')" class="w-full bg-purple-600 text-white py-2 rounded text-sm font-semibold hover:bg-purple-700">Сақтау</button>
+                <div class="card p-6 flex flex-col h-[500px]">
+                    <h3 class="font-bold mb-4 text-purple-600"><i class="fas fa-user-graduate mr-2"></i> Оқушылар</h3>
+                    <div class="space-y-2 mb-4">
+                        <select id="sel-school-student" class="w-full border p-2 rounded text-sm"></select>
+                        <input id="in-student-name" type="text" placeholder="Аты-жөні" class="w-full border p-2 rounded text-sm outline-none focus:border-purple-500">
+                        <input id="in-student-class" type="number" placeholder="Сыныбы" class="w-full border p-2 rounded text-sm outline-none">
+                        <button onclick="saveLocal('students')" class="w-full bg-purple-600 text-white py-2 rounded text-sm hover:bg-purple-700">Сақтау</button>
                     </div>
-                    <div class="flex-1 overflow-y-auto pr-2">
-                        <ul id="list-students" class="space-y-2"></ul>
-                    </div>
+                    <ul id="list-students" class="flex-1 overflow-y-auto space-y-1 text-sm"></ul>
                 </div>
-            </div>
+             </div>
         </section>
 
-        <!-- Achievement Add -->
+        <!-- Achievement -->
         <section id="tab-add-achievement" class="tab-content hidden max-w-xl mx-auto pb-12">
             <div class="card p-8 space-y-6">
                 <h2 class="text-2xl font-bold text-center">Жетістікті тіркеу</h2>
-                
-                <div class="flex bg-slate-100 p-1 rounded-xl">
-                    <button id="type-student" onclick="setAchType('student')" class="type-toggle flex-1 py-2 rounded-lg text-sm font-bold transition-all active">Оқушы жетістігі</button>
-                    <button id="type-teacher" onclick="setAchType('teacher')" class="type-toggle flex-1 py-2 rounded-lg text-sm font-bold transition-all">Мұғалім жетістігі</button>
+                <div class="flex bg-slate-100 p-1 rounded-xl" id="type-switcher">
+                    <button onclick="setType('student')" id="btn-type-student" class="flex-1 py-2 rounded-lg text-sm font-bold transition-all bg-white shadow">Оқушы</button>
+                    <button onclick="setType('teacher')" id="btn-type-teacher" class="flex-1 py-2 rounded-lg text-sm font-bold transition-all">Мұғалім</button>
                 </div>
-
                 <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">1. Мектепті таңдаңыз</label>
-                        <select id="sel-school-final" onchange="filterTargetBySchool()" class="w-full border p-3 rounded-lg outline-none bg-blue-50 border-blue-200 focus:ring-2 focus:ring-blue-400"></select>
-                    </div>
+                    <label class="block text-sm font-medium text-slate-700">Мектепті таңдаңыз</label>
+                    <select id="sel-school-final" onchange="updateTargets()" class="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"></select>
                     
-                    <div id="target-selection-group" class="space-y-4 opacity-50 pointer-events-none transition-all duration-300">
-                        <div id="div-student-select">
-                            <label class="block text-sm font-medium text-slate-700 mb-1">2. Оқушыны таңдаңыз</label>
-                            <select id="sel-student-final" class="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-400"></select>
-                        </div>
-                        
-                        <div id="div-teacher-select">
-                            <label id="label-teacher-role" class="block text-sm font-medium text-slate-700 mb-1">3. Жетекші мұғалім / Иесі</label>
-                            <select id="sel-teacher-final" class="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-400"></select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">4. Жарыс / Байқау атауы</label>
-                            <input id="in-comp-name" type="text" placeholder="Мысалы: Зерде, Дарын, Ақбота..." class="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">5. Байқау деңгейі</label>
-                            <select id="sel-level" class="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
-                                <option value="100">Халықаралық (100 балл)</option>
-                                <option value="80">Республикалық (80 балл)</option>
-                                <option value="60">Облыстық (60 балл)</option>
-                                <option value="40">Аудандық (40 балл)</option>
-                            </select>
-                        </div>
-                        <button onclick="registerAchievement()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95">Тіркеуді аяқтау</button>
-                    </div>
+                    <label class="block text-sm font-medium text-slate-700">Кімге тіркеледі?</label>
+                    <select id="sel-target-final" class="w-full border p-3 rounded-lg outline-none"></select>
+                    
+                    <label class="block text-sm font-medium text-slate-700">Жарыс атауы</label>
+                    <input id="in-comp-name" type="text" placeholder="Мысалы: Олимпиада-2024" class="w-full border p-3 rounded-lg outline-none">
+                    
+                    <label class="block text-sm font-medium text-slate-700">Деңгей (Балл)</label>
+                    <select id="sel-level" class="w-full border p-3 rounded-lg outline-none">
+                        <option value="100">Халықаралық (100 балл)</option>
+                        <option value="80">Республикалық (80 балл)</option>
+                        <option value="60">Облыстық (60 балл)</option>
+                        <option value="40">Аудандық (40 балл)</option>
+                    </select>
+                    <button onclick="addAchievementLocal()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-all">Тіркеуді сақтау</button>
                 </div>
             </div>
         </section>
 
         <!-- Ratings -->
-        <section id="tab-ratings" class="tab-content hidden space-y-6 pb-20">
-            <h2 class="text-2xl font-bold text-slate-800 text-center md:text-left">Рейтингтер және Статистика</h2>
+        <section id="tab-ratings" class="tab-content hidden space-y-6">
+            <h2 class="text-2xl font-bold text-slate-800">Мектептер рейтингі</h2>
+            <div id="rating-list" class="space-y-3"></div>
+        </section>
 
-            <!-- Level Stats Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="card p-4 border-t-4 border-blue-600 bg-blue-50/30">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Халықаралық</p>
-                            <h3 id="stat-lvl-intl" class="text-2xl font-black text-slate-800 mt-1">0</h3>
-                        </div>
-                        <div class="text-blue-200 text-xl"><i class="fas fa-globe"></i></div>
-                    </div>
+        <!-- Settings -->
+        <section id="tab-settings" class="tab-content hidden space-y-6 pb-12">
+            <div class="card p-8">
+                <h2 class="text-2xl font-bold mb-6">Деректерді басқару</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="exportData()" class="bg-blue-600 text-white p-4 rounded-xl font-bold hover:bg-blue-700">
+                        <i class="fas fa-file-export mr-2"></i> Экспорт (.json)
+                    </button>
+                    <label class="bg-green-600 text-white p-4 rounded-xl font-bold text-center cursor-pointer hover:bg-green-700">
+                        <i class="fas fa-file-import mr-2"></i> Импорт
+                        <input type="file" id="importFile" class="hidden" onchange="importData(event)">
+                    </label>
                 </div>
-                <div class="card p-4 border-t-4 border-amber-500 bg-amber-50/30">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Республикалық</p>
-                            <h3 id="stat-lvl-rep" class="text-2xl font-black text-slate-800 mt-1">0</h3>
-                        </div>
-                        <div class="text-amber-200 text-xl"><i class="fas fa-map-marked-alt"></i></div>
-                    </div>
-                </div>
-                <div class="card p-4 border-t-4 border-indigo-500 bg-indigo-50/30">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Облыстық</p>
-                            <h3 id="stat-lvl-reg" class="text-2xl font-black text-slate-800 mt-1">0</h3>
-                        </div>
-                        <div class="text-indigo-200 text-xl"><i class="fas fa-layer-group"></i></div>
-                    </div>
-                </div>
-                <div class="card p-4 border-t-4 border-emerald-500 bg-emerald-50/30">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Аудандық</p>
-                            <h3 id="stat-lvl-dist" class="text-2xl font-black text-slate-800 mt-1">0</h3>
-                        </div>
-                        <div class="text-emerald-200 text-xl"><i class="fas fa-landmark"></i></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card p-6">
-                <div class="flex flex-col space-y-6">
-                    <div class="flex border-b border-slate-100 overflow-x-auto">
-                        <button onclick="setRatingView('school')" id="rtab-school" class="rating-tab whitespace-nowrap px-6 py-3 font-bold text-sm transition-all active">Мектептер</button>
-                        <button onclick="setRatingView('teacher')" id="rtab-teacher" class="rating-tab whitespace-nowrap px-6 py-3 font-bold text-sm transition-all">Мұғалімдер</button>
-                        <button onclick="setRatingView('student')" id="rtab-student" class="rating-tab whitespace-nowrap px-6 py-3 font-bold text-sm transition-all">Оқушылар</button>
-                    </div>
-
-                    <div>
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Деңгей бойынша сүзу</h3>
-                        <div class="flex flex-wrap gap-2">
-                            <input type="checkbox" id="filter-intl" class="filter-checkbox hidden" checked onchange="renderAll()">
-                            <label for="filter-intl" class="px-4 py-2 rounded-lg border border-slate-200 text-xs font-semibold cursor-pointer transition-all hover:bg-slate-50">Халықаралық</label>
-                            
-                            <input type="checkbox" id="filter-rep" class="filter-checkbox hidden" checked onchange="renderAll()">
-                            <label for="filter-rep" class="px-4 py-2 rounded-lg border border-slate-200 text-xs font-semibold cursor-pointer transition-all hover:bg-slate-50">Республикалық</label>
-                            
-                            <input type="checkbox" id="filter-reg" class="filter-checkbox hidden" checked onchange="renderAll()">
-                            <label for="filter-reg" class="px-4 py-2 rounded-lg border border-slate-200 text-xs font-semibold cursor-pointer transition-all hover:bg-slate-50">Облыстық</label>
-                            
-                            <input type="checkbox" id="filter-dist" class="filter-checkbox hidden" checked onchange="renderAll()">
-                            <label for="filter-dist" class="px-4 py-2 rounded-lg border border-slate-200 text-xs font-semibold cursor-pointer transition-all hover:bg-slate-50">Аудандық</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card p-6 md:p-8 min-h-[400px]">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 id="rating-title" class="text-xl font-bold text-slate-800 flex items-center">
-                        <i class="fas fa-list-ol mr-3 text-blue-500"></i> Толық тізім
-                    </h3>
-                    <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold uppercase" id="rating-count">... жазба</div>
-                </div>
-                <div class="bg-blue-50 border border-blue-100 p-3 rounded-lg mb-4 text-xs text-blue-700 flex items-center">
-                    <i class="fas fa-info-circle mr-2"></i> Мәліметті көру үшін тізімдегі нысанның үстінен басыңыз
-                </div>
-                <div id="rating-list-container" class="space-y-3 pb-10"></div>
+                <button onclick="clearAllData()" class="mt-8 text-red-500 text-sm font-medium hover:underline">Барлық деректі өшіру</button>
             </div>
         </section>
     </main>
 </div>
 
-<!-- Details Modal -->
-<div id="details-modal" class="fixed inset-0 bg-slate-900/60 z-[60] flex items-center justify-center p-4 hidden">
-    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        <div class="p-6 border-b flex justify-between items-center bg-slate-50">
-            <div>
-                <h3 id="modal-title" class="text-xl font-bold text-slate-800">Мәліметтер</h3>
-                <p id="modal-subtitle" class="text-sm text-slate-500"></p>
-            </div>
-            <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-200 transition-all text-slate-500">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="flex-1 overflow-y-auto p-6 bg-white safe-scroll-area">
-            <div id="modal-content" class="space-y-3 pb-8"></div>
-        </div>
-        <div class="p-4 bg-slate-50 border-t text-right shrink-0">
-            <button onclick="closeModal()" class="px-6 py-2 bg-slate-800 text-white rounded-lg font-bold hover:bg-slate-700 transition-all shadow-md">Жабу</button>
-        </div>
-    </div>
-</div>
+<div id="toast" class="fixed bottom-5 right-5 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl opacity-0 transition-all duration-300 pointer-events-none"></div>
 
-<div id="toast" class="fixed bottom-5 right-5 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl opacity-0 transition-all duration-300 z-[70] pointer-events-none translate-y-10"></div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    const firebaseConfig = JSON.parse(__firebase_config);
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'marapat-district-app';
-
-    let user = null;
-    let data = { schools: [], teachers: [], students: [], achievements: [] };
-    let currentAchType = 'student';
-    let currentRatingView = 'school';
-
-    const initAuth = async () => {
-        try {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
-            }
-        } catch (e) { console.error(e); }
+<script>
+    // Database initialization
+    let db = JSON.parse(localStorage.getItem('marapat_db')) || { 
+        schools: [], teachers: [], students: [], achievements: [] 
     };
-    initAuth();
+    let currentType = 'student';
 
-    onAuthStateChanged(auth, u => {
-        user = u;
-        if (user) setupListeners();
-    });
-
-    function setupListeners() {
-        const publicRef = (coll) => collection(db, 'artifacts', appId, 'public', 'data', coll);
-        
-        onSnapshot(publicRef('schools'), s => { data.schools = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); }, e => console.error(e));
-        onSnapshot(publicRef('teachers'), s => { data.teachers = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); }, e => console.error(e));
-        onSnapshot(publicRef('students'), s => { data.students = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); }, e => console.error(e));
-        onSnapshot(publicRef('achievements'), s => { data.achievements = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); }, e => console.error(e));
-    }
-
-    window.saveToCloud = async (type) => {
-        if (!user) return;
-        const collRef = collection(db, 'artifacts', appId, 'public', 'data', type);
-        try {
-            if (type === 'schools') {
-                const name = document.getElementById('in-school').value;
-                if (!name) return;
-                await addDoc(collRef, { name, createdAt: Date.now() });
-                document.getElementById('in-school').value = '';
-            } else if (type === 'teachers') {
-                const name = document.getElementById('in-teacher-name').value;
-                const subj = document.getElementById('sel-teacher-subj').value;
-                const category = document.getElementById('sel-teacher-cat').value;
-                const school = document.getElementById('sel-school-teacher').value;
-                if (!name || !subj || !category || !school) { showToast("Өрістерді толтырыңыз"); return; }
-                await addDoc(collRef, { name, subj, category, school });
-                document.getElementById('in-teacher-name').value = '';
-                document.getElementById('sel-teacher-subj').selectedIndex = 0;
-                document.getElementById('sel-teacher-cat').selectedIndex = 0;
-            } else if (type === 'students') {
-                const name = document.getElementById('in-student-name').value;
-                const cls = document.getElementById('sel-student-class').value;
-                const school = document.getElementById('sel-school-student').value;
-                if (!name || !cls || !school) return;
-                await addDoc(collRef, { name, class: cls, school });
-                document.getElementById('in-student-name').value = '';
-            }
-            showToast("Сақталды");
-        } catch(e) { showToast("Қате"); }
-    };
-
-    window.removeItem = async (type, id) => {
-        if (!confirm('Өшіруді растайсыз ба?')) return;
-        try {
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', type, id));
-            showToast("Жойылды");
-        } catch(e) { showToast("Қате"); }
-    };
-
-    window.switchTab = (id) => {
+    // UI functions
+    function switchTab(id) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-        document.getElementById(`tab-${id}`).classList.remove('hidden');
+        document.getElementById('tab-' + id).classList.remove('hidden');
+        
         document.querySelectorAll('.sidebar-link').forEach(l => {
             l.classList.remove('active');
-            if (l.getAttribute('onclick').includes(id)) l.classList.add('active');
+            if(l.getAttribute('onclick').includes(id)) l.classList.add('active');
         });
-    };
 
-    window.setAchType = (t) => {
-        currentAchType = t;
-        document.querySelectorAll('.type-toggle').forEach(b => b.classList.remove('active'));
-        document.getElementById(`type-${t}`).classList.add('active');
-        const divSt = document.getElementById('div-student-select');
-        const lblTc = document.getElementById('label-teacher-role');
-        if (t === 'teacher') {
-            divSt.classList.add('hidden');
-            lblTc.innerText = '2. Мұғалімді таңдаңыз';
-        } else {
-            divSt.classList.remove('hidden');
-            lblTc.innerText = '3. Жетекші мұғалім';
+        if(window.innerWidth < 768) {
+            document.getElementById('sidebar').classList.add('hidden');
         }
-        filterTargetBySchool();
-    };
-
-    window.setRatingView = (v) => {
-        currentRatingView = v;
-        document.querySelectorAll('.rating-tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(`rtab-${v}`).classList.add('active');
         renderAll();
-    };
+    }
 
-    window.filterTargetBySchool = () => {
-        const sch = document.getElementById('sel-school-final').value;
-        const group = document.getElementById('target-selection-group');
-        if (!sch) { group.classList.add('opacity-50', 'pointer-events-none'); return; }
-        group.classList.remove('opacity-50', 'pointer-events-none');
+    function toggleMobileMenu() {
+        document.getElementById('sidebar').classList.toggle('hidden');
+    }
+
+    function setType(type) {
+        currentType = type;
+        const btnS = document.getElementById('btn-type-student');
+        const btnT = document.getElementById('btn-type-teacher');
         
-        document.getElementById('sel-student-final').innerHTML = '<option value="" disabled selected>Таңдаңыз</option>' + 
-            data.students.filter(s => s.school === sch).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-        document.getElementById('sel-teacher-final').innerHTML = '<option value="" disabled selected>Таңдаңыз</option>' + 
-            data.teachers.filter(t => t.school === sch).map(t => `<option value="${t.id}">${t.name} (${t.category})</option>`).join('');
-    };
+        if(type === 'student') {
+            btnS.className = "flex-1 py-2 rounded-lg text-sm font-bold bg-white shadow";
+            btnT.className = "flex-1 py-2 rounded-lg text-sm font-bold";
+        } else {
+            btnT.className = "flex-1 py-2 rounded-lg text-sm font-bold bg-white shadow";
+            btnS.className = "flex-1 py-2 rounded-lg text-sm font-bold";
+        }
+        updateTargets();
+    }
 
-    window.registerAchievement = async () => {
+    // CRUD functions
+    function saveLocal(type) {
+        let entry = { id: Date.now() };
+        if(type === 'schools') {
+            const name = document.getElementById('in-school').value;
+            if(!name) return;
+            entry.name = name;
+            document.getElementById('in-school').value = "";
+        }
+        if(type === 'teachers') {
+            const name = document.getElementById('in-teacher-name').value;
+            if(!name) return;
+            entry.name = name;
+            entry.school = document.getElementById('sel-school-teacher').value;
+            entry.category = document.getElementById('sel-teacher-cat').value;
+            document.getElementById('in-teacher-name').value = "";
+        }
+        if(type === 'students') {
+            const name = document.getElementById('in-student-name').value;
+            if(!name) return;
+            entry.name = name;
+            entry.school = document.getElementById('sel-school-student').value;
+            entry.class = document.getElementById('in-student-class').value;
+            document.getElementById('in-student-name').value = "";
+        }
+        
+        db[type].push(entry);
+        sync();
+    }
+
+    function addAchievementLocal() {
         const sch = document.getElementById('sel-school-final').value;
-        const compName = document.getElementById('in-comp-name').value;
+        const targetId = document.getElementById('sel-target-final').value;
+        const comp = document.getElementById('in-comp-name').value;
         const score = parseInt(document.getElementById('sel-level').value);
-        const lvl = document.getElementById('sel-level').options[document.getElementById('sel-level').selectedIndex].text.split(' ')[0];
         
-        if (!compName) { showToast("Жарыс атауын жазыңыз"); return; }
+        if(!sch || !targetId || !comp) return showToast("Барлық өрісті толтырыңыз");
 
-        let payload = { 
-            type: currentAchType, 
-            school: sch, 
-            level: lvl, 
-            score, 
-            competitionName: compName,
-            timestamp: Date.now() 
-        };
-        
-        if (currentAchType === 'student') {
-            const sId = document.getElementById('sel-student-final').value;
-            const tId = document.getElementById('sel-teacher-final').value;
-            if(!sId || !tId) return;
-            const sObj = data.students.find(x => x.id === sId);
-            payload.ownerName = sObj.name;
-            payload.extra = `${sObj.class}-сынып`;
-        } else {
-            const tId = document.getElementById('sel-teacher-final').value;
-            if(!tId) return;
-            const tObj = data.teachers.find(x => x.id === tId);
-            payload.ownerName = tObj.name;
-            payload.extra = `${tObj.subj} | ${tObj.category}`;
-        }
+        const list = currentType === 'student' ? db.students : db.teachers;
+        const target = list.find(x => x.id == targetId);
 
-        try {
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'achievements'), payload);
-            showToast("Тіркелді");
-            document.getElementById('in-comp-name').value = '';
-            switchTab('dashboard');
-        } catch(e) { showToast("Қате"); }
-    };
-
-    window.showDetails = (targetName) => {
-        const modal = document.getElementById('details-modal');
-        const mTitle = document.getElementById('modal-title');
-        const mSub = document.getElementById('modal-subtitle');
-        const mContent = document.getElementById('modal-content');
-
-        const filters = { 
-            'Халықаралық': document.getElementById('filter-intl').checked, 
-            'Республикалық': document.getElementById('filter-rep').checked, 
-            'Облыстық': document.getElementById('filter-reg').checked, 
-            'Аудандық': document.getElementById('filter-dist').checked 
-        };
-
-        let details = [];
-        if (currentRatingView === 'school') {
-            details = data.achievements.filter(a => a.school === targetName && filters[a.level]);
-            mTitle.innerText = targetName;
-            mSub.innerText = "Мектептің барлық жетістіктері";
-        } else {
-            details = data.achievements.filter(a => a.ownerName === targetName && filters[a.level]);
-            mTitle.innerText = targetName;
-            mSub.innerText = "Жеке жетістіктер тізімі";
-        }
-
-        details.sort((a,b) => b.timestamp - a.timestamp);
-
-        if (details.length === 0) {
-            mContent.innerHTML = `<div class="p-8 text-center text-slate-400 italic">Сүзгіге сәйкес жетістіктер табылған жоқ.</div>`;
-        } else {
-            mContent.innerHTML = details.map(d => `
-                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100 transition-colors">
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-blue-600 text-white w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shadow-sm">
-                            ${d.level[0]}
-                        </div>
-                        <div>
-                            <p class="font-bold text-slate-800 text-sm">${d.competitionName || 'Атаусыз жарыс'}</p>
-                            <p class="text-[10px] text-slate-500">${d.level} деңгей • ${new Date(d.timestamp).toLocaleDateString()}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="text-right">
-                            <span class="font-black text-blue-600 text-base">${d.score}</span>
-                            <span class="text-[8px] block text-slate-400 uppercase font-bold">Балл</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-        modal.classList.remove('hidden');
-    };
-
-    window.closeModal = () => {
-        document.getElementById('details-modal').classList.add('hidden');
-    };
-
-    function renderAll() {
-        // Basic Stats
-        document.getElementById('stat-students').innerText = data.students.length;
-        document.getElementById('stat-teachers').innerText = data.teachers.length;
-        document.getElementById('stat-schools').innerText = data.schools.length;
-        document.getElementById('stat-achievements').innerText = data.achievements.length;
-
-        // Teacher Categories Stats Calculation
-        const catCounts = {
-            'Шебер': 0,
-            'Зерттеуші': 0,
-            'Сарапшы': 0,
-            'Модератор': 0,
-            'Педагог': 0
-        };
-        data.teachers.forEach(t => {
-            if (catCounts.hasOwnProperty(t.category)) catCounts[t.category]++;
+        db.achievements.push({
+            id: Date.now(),
+            ownerName: target ? target.name : "Белгісіз",
+            school: sch,
+            competitionName: comp,
+            score: score,
+            level: document.getElementById('sel-level').options[document.getElementById('sel-level').selectedIndex].text.split(' ')[0],
+            timestamp: Date.now()
         });
-
-        document.getElementById('count-cat-sheber').innerText = catCounts['Шебер'];
-        document.getElementById('count-cat-zertteushi').innerText = catCounts['Зерттеуші'];
-        document.getElementById('count-cat-sarapshy').innerText = catCounts['Сарапшы'];
-        document.getElementById('count-cat-moderator').innerText = catCounts['Модератор'];
-        document.getElementById('count-cat-pedagog').innerText = catCounts['Педагог'];
-
-        const counts = { 'Халықаралық': 0, 'Республикалық': 0, 'Облыстық': 0, 'Аудандық': 0 };
-        data.achievements.forEach(a => { if(counts[a.level] !== undefined) counts[a.level]++; });
         
-        document.getElementById('stat-lvl-intl').innerText = counts['Халықаралық'];
-        document.getElementById('stat-lvl-rep').innerText = counts['Республикалық'];
-        document.getElementById('stat-lvl-reg').innerText = counts['Облыстық'];
-        document.getElementById('stat-lvl-dist').innerText = counts['Аудандық'];
+        document.getElementById('in-comp-name').value = "";
+        sync();
+        switchTab('dashboard');
+    }
 
-        document.getElementById('list-schools').innerHTML = data.schools.map(s => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-sm mb-1"><span>${s.name}</span><button onclick="removeItem('schools','${s.id}')" class="text-red-400 p-1 hover:text-red-600 transition-colors"><i class="fas fa-trash"></i></button></li>`).join('');
-        document.getElementById('list-teachers').innerHTML = data.teachers.map(t => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-xs mb-1"><span>${t.name} <span class="text-blue-500 font-bold">[${t.category}]</span></span><button onclick="removeItem('teachers','${t.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button></li>`).join('');
-        document.getElementById('list-students').innerHTML = data.students.map(s => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-sm mb-1"><span>${s.name} (${s.class})</span><button onclick="removeItem('students','${s.id}')" class="text-red-400 p-1 hover:text-red-600 transition-colors"><i class="fas fa-trash"></i></button></li>`).join('');
+    function remove(type, id) {
+        if(!confirm("Өшіруді растайсыз ба?")) return;
+        db[type] = db[type].filter(x => x.id != id);
+        sync();
+    }
 
-        const schOpt = '<option value="" disabled selected>Мектепті таңдаңыз</option>' + data.schools.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-        ['sel-school-teacher', 'sel-school-student', 'sel-school-final'].forEach(id => {
-            const el = document.getElementById(id);
-            if(el) el.innerHTML = schOpt;
-        });
+    function sync() {
+        localStorage.setItem('marapat_db', JSON.stringify(db));
+        renderAll();
+        showToast("Деректер жаңартылды");
+    }
 
-        const table = document.getElementById('activity-table');
-        if(table) {
-            table.innerHTML = [...data.achievements].sort((a,b)=>b.timestamp-a.timestamp).slice(0, 10).map(a => `
-                <tr class="text-sm border-b hover:bg-slate-50">
-                    <td class="px-6 py-3">
-                        <div class="font-bold text-slate-800">${a.ownerName}</div>
-                        <div class="text-[10px] text-slate-500 italic font-medium mt-0.5">
-                            <i class="fas fa-trophy mr-1 text-amber-500 scale-75"></i> ${a.competitionName || 'Атаусыз жарыс'}
-                        </div>
-                    </td>
-                    <td class="px-6 py-3 text-xs">
-                        <span class="block text-slate-700 font-medium">${a.school}</span>
-                        <span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded uppercase font-bold text-slate-500">${a.type === 'student' ? 'оқушы' : 'мұғалім'}</span>
-                    </td>
-                    <td class="px-6 py-3 text-blue-600 font-bold">${a.level}</td>
-                    <td class="px-6 py-3 text-right font-black text-slate-800">${a.score}</td>
-                    <td class="px-6 py-3 text-center"><button onclick="removeItem('achievements','${a.id}')" class="text-slate-300 hover:text-red-500 transition-colors"><i class="fas fa-trash"></i></button></td>
-                </tr>
-            `).join('');
-        }
-
-        const filters = { 
-            'Халықаралық': document.getElementById('filter-intl').checked, 
-            'Республикалық': document.getElementById('filter-rep').checked, 
-            'Облыстық': document.getElementById('filter-reg').checked, 
-            'Аудандық': document.getElementById('filter-dist').checked 
-        };
-
-        const filteredAchievements = data.achievements.filter(a => filters[a.level]);
-        let results = [];
-        let titleText = "Мектептер рейтингі";
-        let icon = "fa-school";
-
-        if (currentRatingView === 'school') {
-            const schS = {}; 
-            data.schools.forEach(s => schS[s.name] = 0);
-            filteredAchievements.forEach(a => { if(schS[a.school] !== undefined) schS[a.school] += a.score; });
-            results = Object.entries(schS).map(([name, score]) => ({ name, score, sub: 'Мектеп' }));
-            titleText = "Мектептер рейтингі";
-        } else if (currentRatingView === 'teacher') {
-            const tcS = {};
-            filteredAchievements.filter(a => a.type === 'teacher').forEach(a => {
-                tcS[a.ownerName] = (tcS[a.ownerName] || 0) + a.score;
-            });
-            results = Object.entries(tcS).map(([name, score]) => {
-                const info = data.teachers.find(t => t.name === name);
-                return { name, score, sub: info ? `${info.category} | ${info.subj} | ${info.school}` : 'Мұғалім' };
-            });
-            titleText = "Мұғалімдер рейтингі";
-            icon = "fa-chalkboard-teacher";
-        } else if (currentRatingView === 'student') {
-            const stS = {};
-            filteredAchievements.filter(a => a.type === 'student').forEach(a => {
-                stS[a.ownerName] = (stS[a.ownerName] || 0) + a.score;
-            });
-            results = Object.entries(stS).map(([name, score]) => {
-                const info = data.students.find(s => s.name === name);
-                return { name, score, sub: info ? `${info.class}-сынып | ${info.school}` : 'Оқушы' };
-            });
-            titleText = "Оқушылар рейтингі";
-            icon = "fa-user-graduate";
-        }
-
-        results.sort((a, b) => b.score - a.score);
-        document.getElementById('rating-title').innerHTML = `<i class="fas ${icon} mr-3 text-blue-500"></i> ${titleText}`;
-        document.getElementById('rating-count').innerText = `${results.length} жазба`;
-
-        const listContainer = document.getElementById('rating-list-container');
-        if (results.length === 0) {
-            listContainer.innerHTML = `<div class="p-10 text-center text-slate-400 italic">Бұл санатта әзірге жетістіктер жоқ...</div>`;
+    function updateTargets() {
+        const sch = document.getElementById('sel-school-final').value;
+        const list = currentType === 'student' ? db.students : db.teachers;
+        const filtered = list.filter(x => x.school === sch);
+        const sel = document.getElementById('sel-target-final');
+        if(filtered.length === 0) {
+            sel.innerHTML = '<option value="">Тізім бос (Алдымен базаға қосыңыз)</option>';
         } else {
-            listContainer.innerHTML = results.map((r, index) => `
-                <div onclick="showDetails('${r.name}')" class="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group animate-fadeIn">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 flex items-center justify-center rounded-full ${index < 3 ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-500'} font-bold text-sm shadow-sm">
-                            ${index + 1}
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">${r.name}</h4>
-                            <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">${r.sub}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="text-right">
-                            <span class="text-xl font-black text-blue-600">${r.score}</span>
-                            <p class="text-[9px] text-slate-400 uppercase font-bold tracking-tighter">Жалпы балл</p>
-                        </div>
-                        <div class="bg-slate-50 p-2 rounded-lg group-hover:bg-blue-50 transition-colors">
-                            <i class="fas fa-chevron-right text-slate-300 group-hover:text-blue-500 transition-all"></i>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            sel.innerHTML = filtered.map(x => `<option value="${x.id}">${x.name} ${x.class ? '('+x.class+' сынып)' : ''}</option>`).join('');
         }
     }
 
-    window.showToast = (m) => {
+    function renderAll() {
+        // Stats
+        document.getElementById('stat-students').innerText = db.students.length;
+        document.getElementById('stat-teachers').innerText = db.teachers.length;
+        document.getElementById('stat-schools').innerText = db.schools.length;
+        document.getElementById('stat-achievements').innerText = db.achievements.length;
+
+        // School dropdowns
+        const schOpt = db.schools.length > 0 
+            ? db.schools.map(x => `<option value="${x.name}">${x.name}</option>`).join('')
+            : '<option value="">Мектептер жоқ</option>';
+        
+        ['sel-school-teacher', 'sel-school-student', 'sel-school-final'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                const currentVal = el.value;
+                el.innerHTML = schOpt;
+                if(currentVal) el.value = currentVal;
+            }
+        });
+
+        // Lists in Database tab
+        document.getElementById('list-schools').innerHTML = db.schools.map(x => `
+            <li class="p-2 border-b flex justify-between items-center group">
+                <span>${x.name}</span>
+                <button onclick="remove('schools', ${x.id})" class="text-slate-300 hover:text-red-500"><i class="fas fa-trash-alt"></i></button>
+            </li>
+        `).join('');
+
+        document.getElementById('list-teachers').innerHTML = db.teachers.map(x => `
+            <li class="p-2 border-b flex justify-between items-center group text-xs">
+                <div><b>${x.name}</b><br><span class="text-slate-400">${x.school}</span></div>
+                <button onclick="remove('teachers', ${x.id})" class="text-slate-300 hover:text-red-500"><i class="fas fa-trash-alt"></i></button>
+            </li>
+        `).join('');
+
+        document.getElementById('list-students').innerHTML = db.students.map(x => `
+            <li class="p-2 border-b flex justify-between items-center group text-xs">
+                <div><b>${x.name}</b> (${x.class} сынып)<br><span class="text-slate-400">${x.school}</span></div>
+                <button onclick="remove('students', ${x.id})" class="text-slate-300 hover:text-red-500"><i class="fas fa-trash-alt"></i></button>
+            </li>
+        `).join('');
+
+        // Main Activity Table
+        document.getElementById('activity-table').innerHTML = db.achievements.slice().reverse().slice(0, 15).map(a => `
+            <tr class="text-sm border-b hover:bg-slate-50">
+                <td class="px-6 py-4"><b>${a.ownerName}</b><br><small class="text-slate-500">${a.competitionName}</small></td>
+                <td class="px-6 py-4">${a.school}</td>
+                <td class="px-6 py-4"><span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-[10px] font-bold">${a.level}</span></td>
+                <td class="px-6 py-4 text-right font-bold text-blue-600">+${a.score}</td>
+                <td class="px-6 py-4 text-center">
+                    <button onclick="remove('achievements', ${a.id})" class="text-slate-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+        `).join('');
+
+        // Ratings Logic
+        const scores = {};
+        db.schools.forEach(s => scores[s.name] = 0);
+        db.achievements.forEach(a => {
+            if(scores[a.school] !== undefined) scores[a.school] += a.score;
+        });
+
+        const sorted = Object.entries(scores).sort((a,b) => b[1] - a[1]);
+        document.getElementById('rating-list').innerHTML = sorted.map(([name, score], i) => `
+            <div class="card p-4 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-8 h-8 ${i < 3 ? 'bg-yellow-400' : 'bg-slate-100'} rounded-full flex items-center justify-center font-bold text-sm">
+                        ${i + 1}
+                    </div>
+                    <span class="font-bold">${name}</span>
+                </div>
+                <div class="text-blue-600 font-bold text-lg">${score} <small class="text-xs text-slate-400">балл</small></div>
+            </div>
+        `).join('');
+    }
+
+    function exportData() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+        const a = document.createElement('a');
+        a.href = dataStr; a.download = "marapat_data.json";
+        a.click();
+    }
+
+    function importData(e) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                db = JSON.parse(event.target.result);
+                sync();
+                showToast("Импорт сәтті аяқталды");
+            } catch(err) { showToast("Қате файл форматы"); }
+        };
+        reader.readAsText(e.target.files[0]);
+    }
+
+    function clearAllData() {
+        if(confirm("Назар аударыңыз! Барлық мәлімет жойылады. Жалғастырамыз ба?")) {
+            db = { schools: [], teachers: [], students: [], achievements: [] };
+            sync();
+        }
+    }
+
+    function showToast(m) {
         const t = document.getElementById('toast');
-        t.innerText = m; t.style.opacity = '1'; t.style.transform = 'translateY(0)';
-        setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(10px)'; }, 2000);
-    };
-    window.renderAll = renderAll;
+        t.innerText = m; t.style.opacity = '1';
+        setTimeout(() => t.style.opacity = '0', 3000);
+    }
+
+    // Initial load
+    renderAll();
+    updateTargets();
 </script>
 </body>
 </html>
