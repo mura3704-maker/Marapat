@@ -409,6 +409,7 @@
     import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+    // Платформа параметрлері (Осы жердегі config ауыстыруға болады)
     const firebaseConfig = JSON.parse(__firebase_config);
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -632,16 +633,8 @@
         document.getElementById('stat-achievements').innerText = data.achievements.length;
 
         // Teacher Categories Stats Calculation
-        const catCounts = {
-            'Шебер': 0,
-            'Зерттеуші': 0,
-            'Сарапшы': 0,
-            'Модератор': 0,
-            'Педагог': 0
-        };
-        data.teachers.forEach(t => {
-            if (catCounts.hasOwnProperty(t.category)) catCounts[t.category]++;
-        });
+        const catCounts = { 'Шебер': 0, 'Зерттеуші': 0, 'Сарапшы': 0, 'Модератор': 0, 'Педагог': 0 };
+        data.teachers.forEach(t => { if (catCounts.hasOwnProperty(t.category)) catCounts[t.category]++; });
 
         document.getElementById('count-cat-sheber').innerText = catCounts['Шебер'];
         document.getElementById('count-cat-zertteushi').innerText = catCounts['Зерттеуші'];
@@ -701,33 +694,23 @@
         let icon = "fa-school";
 
         if (currentRatingView === 'school') {
-            const schS = {}; 
-            data.schools.forEach(s => schS[s.name] = 0);
+            const schS = {}; data.schools.forEach(s => schS[s.name] = 0);
             filteredAchievements.forEach(a => { if(schS[a.school] !== undefined) schS[a.school] += a.score; });
             results = Object.entries(schS).map(([name, score]) => ({ name, score, sub: 'Мектеп' }));
-            titleText = "Мектептер рейтингі";
         } else if (currentRatingView === 'teacher') {
-            const tcS = {};
-            filteredAchievements.filter(a => a.type === 'teacher').forEach(a => {
-                tcS[a.ownerName] = (tcS[a.ownerName] || 0) + a.score;
-            });
+            const tcS = {}; filteredAchievements.filter(a => a.type === 'teacher').forEach(a => { tcS[a.ownerName] = (tcS[a.ownerName] || 0) + a.score; });
             results = Object.entries(tcS).map(([name, score]) => {
                 const info = data.teachers.find(t => t.name === name);
                 return { name, score, sub: info ? `${info.category} | ${info.subj} | ${info.school}` : 'Мұғалім' };
             });
-            titleText = "Мұғалімдер рейтингі";
-            icon = "fa-chalkboard-teacher";
+            titleText = "Мұғалімдер рейтингі"; icon = "fa-chalkboard-teacher";
         } else if (currentRatingView === 'student') {
-            const stS = {};
-            filteredAchievements.filter(a => a.type === 'student').forEach(a => {
-                stS[a.ownerName] = (stS[a.ownerName] || 0) + a.score;
-            });
+            const stS = {}; filteredAchievements.filter(a => a.type === 'student').forEach(a => { stS[a.ownerName] = (stS[a.ownerName] || 0) + a.score; });
             results = Object.entries(stS).map(([name, score]) => {
                 const info = data.students.find(s => s.name === name);
                 return { name, score, sub: info ? `${info.class}-сынып | ${info.school}` : 'Оқушы' };
             });
-            titleText = "Оқушылар рейтингі";
-            icon = "fa-user-graduate";
+            titleText = "Оқушылар рейтингі"; icon = "fa-user-graduate";
         }
 
         results.sort((a, b) => b.score - a.score);
