@@ -8,69 +8,55 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
         .sidebar-link.active { background-color: #3b82f6; color: white; }
         .card { background: white; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
         .tab-content { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .filter-checkbox:checked + label {
-            background-color: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-        }
-
-        .rating-tab.active {
-            border-bottom: 3px solid #3b82f6;
-            color: #3b82f6;
-        }
-
+        .filter-checkbox:checked + label { background-color: #3b82f6; color: white; border-color: #3b82f6; }
+        .rating-tab.active { border-bottom: 3px solid #3b82f6; color: #3b82f6; }
         .rating-item { transition: all 0.2s ease; }
         .rating-item:hover { transform: translateX(5px); border-color: #3b82f6; }
 
-        .stat-card-mini {
-            transition: all 0.3s ease;
-            border: 1px solid #f1f5f9;
-        }
-        .stat-card-mini:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
+        .stat-card-mini { transition: all 0.3s ease; border: 1px solid #f1f5f9; }
+        .stat-card-mini:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         
-        /* Custom scrollbar for database lists */
         .db-list-scroll::-webkit-scrollbar { width: 4px; }
-        .db-list-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
         .db-list-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-900">
 
 <div id="app" class="flex flex-col md:flex-row min-h-screen">
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-white p-4 border-b flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <div class="bg-blue-600 p-1.5 rounded text-white"><i class="fas fa-award"></i></div>
+            <span class="font-bold">МАРАПАТ</span>
+        </div>
+        <button onclick="document.getElementById('sidebar').classList.toggle('hidden')" class="p-2"><i class="fas fa-bars"></i></button>
+    </div>
+
     <!-- Sidebar -->
     <aside id="sidebar" class="w-full md:w-64 bg-white border-r border-slate-200 p-4 space-y-4 hidden md:block">
-        <div class="flex items-center space-x-2 px-4 py-6">
-            <div class="bg-blue-600 p-2 rounded-lg text-white">
-                <i class="fas fa-award text-2xl"></i>
-            </div>
+        <div class="hidden md:flex items-center space-x-2 px-4 py-6">
+            <div class="bg-blue-600 p-2 rounded-lg text-white"><i class="fas fa-award text-2xl"></i></div>
             <h1 class="text-xl font-bold text-slate-800">МАРАПАТ</h1>
         </div>
         
         <nav class="space-y-1">
             <button onclick="switchTab('dashboard')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 text-slate-600 hover:bg-slate-100 active">
-                <i class="fas fa-chart-pie w-5"></i>
-                <span>Басты бет</span>
+                <i class="fas fa-chart-pie w-5"></i><span>Басты бет</span>
             </button>
             <button onclick="switchTab('database')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 text-slate-600 hover:bg-slate-100">
-                <i class="fas fa-database w-5"></i>
-                <span>Базаны толтыру</span>
+                <i class="fas fa-database w-5"></i><span>База</span>
             </button>
             <button onclick="switchTab('add-achievement')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 text-slate-600 hover:bg-slate-100">
-                <i class="fas fa-plus-circle w-5"></i>
-                <span>Жетістік қосу</span>
+                <i class="fas fa-plus-circle w-5"></i><span>Жетістік қосу</span>
             </button>
             <button onclick="switchTab('ratings')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center space-x-3 text-slate-600 hover:bg-slate-100">
-                <i class="fas fa-trophy w-5"></i>
-                <span>Рейтингтер</span>
+                <i class="fas fa-trophy w-5"></i><span>Рейтингтер</span>
             </button>
         </nav>
     </aside>
@@ -105,9 +91,9 @@
                             <tr>
                                 <th class="px-6 py-3">Иесі / Жарыс</th>
                                 <th class="px-6 py-3">Мектеп</th>
-                                <th class="px-6 py-3">Деңгей</th>
+                                <th class="px-6 py-3 text-center">Түрі</th>
                                 <th class="px-6 py-3 text-right">Балл</th>
-                                <th class="px-6 py-3 text-center">🗑️</th>
+                                <th class="px-6 py-3 text-center"></th>
                             </tr>
                         </thead>
                         <tbody id="activity-table" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -120,7 +106,6 @@
         <section id="tab-database" class="tab-content hidden space-y-6 pb-12">
              <h2 class="text-2xl font-bold text-slate-800">Базаны басқару</h2>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Schools -->
                 <div class="card p-6 flex flex-col h-[450px]">
                     <h3 class="font-bold mb-4 text-blue-600">Мектептер</h3>
                     <div class="flex space-x-2 mb-4">
@@ -129,7 +114,6 @@
                     </div>
                     <div class="flex-1 overflow-y-auto db-list-scroll"><ul id="list-schools" class="space-y-2 pr-2"></ul></div>
                 </div>
-                <!-- Teachers -->
                 <div class="card p-6 flex flex-col h-[450px]">
                     <h3 class="font-bold mb-4 text-green-600">Мұғалімдер</h3>
                     <div class="space-y-3 mb-4">
@@ -139,7 +123,6 @@
                     </div>
                     <div class="flex-1 overflow-y-auto db-list-scroll"><ul id="list-teachers" class="space-y-2 pr-2"></ul></div>
                 </div>
-                <!-- Students -->
                 <div class="card p-6 flex flex-col h-[450px]">
                     <h3 class="font-bold mb-4 text-purple-600">Оқушылар</h3>
                     <div class="space-y-3 mb-4">
@@ -152,20 +135,31 @@
              </div>
         </section>
 
-        <!-- Achievement Add -->
+        <!-- Add Achievement -->
         <section id="tab-add-achievement" class="tab-content hidden max-w-xl mx-auto pb-12">
             <div class="card p-8 space-y-6">
                 <h2 class="text-2xl font-bold text-center">Жетістікті тіркеу</h2>
                 <div class="space-y-4">
-                    <label class="text-xs font-bold text-slate-400 uppercase">Мектепті таңдаңыз</label>
-                    <select id="sel-school-final" class="w-full border p-3 rounded-lg outline-none bg-blue-50"></select>
+                    <label class="block text-sm font-bold text-slate-600">1. Мектепті таңдаңыз:</label>
+                    <select id="sel-school-filter" onchange="updateOwnerList()" class="w-full border p-3 rounded-lg outline-none bg-blue-50">
+                        <option value="">Мектептер тізімі...</option>
+                    </select>
+
+                    <label class="block text-sm font-bold text-slate-600">2. Кімнің жетістігі:</label>
+                    <div class="flex space-x-2">
+                        <button onclick="setOwnerType('student')" id="btn-type-student" class="flex-1 py-2 px-4 rounded-lg border-2 border-blue-600 bg-blue-600 text-white font-bold transition-all">Оқушы</button>
+                        <button onclick="setOwnerType('teacher')" id="btn-type-teacher" class="flex-1 py-2 px-4 rounded-lg border-2 border-slate-200 text-slate-400 font-bold transition-all">Мұғалім</button>
+                    </div>
+
+                    <label class="block text-sm font-bold text-slate-600">3. Адамды таңдаңыз:</label>
+                    <select id="sel-owner-final" class="w-full border p-3 rounded-lg outline-none">
+                        <option value="">Алдымен мектепті таңдаңыз...</option>
+                    </select>
                     
-                    <label class="text-xs font-bold text-slate-400 uppercase">Иесі (Оқушы немесе Мұғалім)</label>
-                    <input id="in-owner-name" type="text" placeholder="Аты-жөнін енгізіңіз" class="w-full border p-3 rounded-lg outline-none">
+                    <label class="block text-sm font-bold text-slate-600">Жарыс атауы:</label>
+                    <input id="in-comp-name" type="text" placeholder="Мысалы: Олимпияда, Ақбота" class="w-full border p-3 rounded-lg outline-none">
                     
-                    <label class="text-xs font-bold text-slate-400 uppercase">Жарыс мәліметтері</label>
-                    <input id="in-comp-name" type="text" placeholder="Жарыс атауы (мысалы: Зерде)" class="w-full border p-3 rounded-lg outline-none">
-                    
+                    <label class="block text-sm font-bold text-slate-600">Жетістік деңгейі:</label>
                     <select id="sel-level" class="w-full border p-3 rounded-lg outline-none">
                         <option value="100">Халықаралық (100 балл)</option>
                         <option value="80">Республикалық (80 балл)</option>
@@ -173,55 +167,45 @@
                         <option value="40">Аудандық (40 балл)</option>
                     </select>
                     
-                    <button onclick="registerAchievement()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-all">Мәліметті сақтау</button>
+                    <button onclick="registerAchievement()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg mt-4">Мәліметті сақтау</button>
                 </div>
             </div>
         </section>
 
         <!-- Ratings -->
         <section id="tab-ratings" class="tab-content hidden space-y-6 pb-20">
-            <!-- ДЕҢГЕЙЛЕР БОЙЫНША СТАТИСТИКА -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="stat-card-mini card p-4 border-t-4 border-red-500">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Халықаралық</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">Халықаралық</p>
                     <h4 id="stat-intl" class="text-xl font-black text-slate-800">0</h4>
                 </div>
                 <div class="stat-card-mini card p-4 border-t-4 border-blue-500">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Республикалық</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">Республикалық</p>
                     <h4 id="stat-rep" class="text-xl font-black text-slate-800">0</h4>
                 </div>
                 <div class="stat-card-mini card p-4 border-t-4 border-green-500">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Облыстық</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">Облыстық</p>
                     <h4 id="stat-reg" class="text-xl font-black text-slate-800">0</h4>
                 </div>
                 <div class="stat-card-mini card p-4 border-t-4 border-orange-500">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Аудандық</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">Аудандық</p>
                     <h4 id="stat-dist" class="text-xl font-black text-slate-800">0</h4>
                 </div>
             </div>
 
             <div class="card p-6">
                 <div class="flex border-b border-slate-100 mb-6 overflow-x-auto">
-                    <button onclick="setRatingView('school')" id="rtab-school" class="rating-tab px-6 py-3 font-bold text-sm transition-all active">Мектептер</button>
-                    <button onclick="setRatingView('teacher')" id="rtab-teacher" class="rating-tab px-6 py-3 font-bold text-sm transition-all">Мұғалімдер</button>
-                    <button onclick="setRatingView('student')" id="rtab-student" class="rating-tab px-6 py-3 font-bold text-sm transition-all">Оқушылар</button>
+                    <button onclick="setRatingView('school')" id="rtab-school" class="rating-tab px-6 py-3 font-bold text-sm active">Мектептер</button>
+                    <button onclick="setRatingView('teacher')" id="rtab-teacher" class="rating-tab px-6 py-3 font-bold text-sm">Мұғалімдер</button>
+                    <button onclick="setRatingView('student')" id="rtab-student" class="rating-tab px-6 py-3 font-bold text-sm">Оқушылар</button>
                 </div>
                 
-                <div class="mb-6 flex flex-wrap gap-3 items-center">
-                    <span class="text-xs font-bold text-slate-400 uppercase">Сүзгі:</span>
-                    <div class="flex flex-wrap gap-2">
-                        <input type="checkbox" id="f-intl" class="filter-checkbox hidden" checked onchange="renderAll()">
-                        <label for="f-intl" class="px-3 py-1.5 rounded-full border border-slate-200 text-[10px] font-bold cursor-pointer transition-all">ХАЛЫҚАР.</label>
-                        
-                        <input type="checkbox" id="f-rep" class="filter-checkbox hidden" checked onchange="renderAll()">
-                        <label for="f-rep" class="px-3 py-1.5 rounded-full border border-slate-200 text-[10px] font-bold cursor-pointer transition-all">РЕСПУБ.</label>
-                        
-                        <input type="checkbox" id="f-reg" class="filter-checkbox hidden" checked onchange="renderAll()">
-                        <label for="f-reg" class="px-3 py-1.5 rounded-full border border-slate-200 text-[10px] font-bold cursor-pointer transition-all">ОБЛЫС.</label>
-                        
-                        <input type="checkbox" id="f-dist" class="filter-checkbox hidden" checked onchange="renderAll()">
-                        <label for="f-dist" class="px-3 py-1.5 rounded-full border border-slate-200 text-[10px] font-bold cursor-pointer transition-all">АУДАН.</label>
-                    </div>
+                <div class="mb-6 flex flex-wrap gap-2 items-center">
+                    <span class="text-xs font-bold text-slate-400">СҮЗГІ:</span>
+                    <input type="checkbox" id="f-intl" class="filter-checkbox hidden" checked onchange="renderAll()"><label for="f-intl" class="px-3 py-1.5 rounded-full border text-[10px] font-bold cursor-pointer transition-all">ХАЛЫҚАР.</label>
+                    <input type="checkbox" id="f-rep" class="filter-checkbox hidden" checked onchange="renderAll()"><label for="f-rep" class="px-3 py-1.5 rounded-full border text-[10px] font-bold cursor-pointer transition-all">РЕСПУБ.</label>
+                    <input type="checkbox" id="f-reg" class="filter-checkbox hidden" checked onchange="renderAll()"><label for="f-reg" class="px-3 py-1.5 rounded-full border text-[10px] font-bold cursor-pointer transition-all">ОБЛЫС.</label>
+                    <input type="checkbox" id="f-dist" class="filter-checkbox hidden" checked onchange="renderAll()"><label for="f-dist" class="px-3 py-1.5 rounded-full border text-[10px] font-bold cursor-pointer transition-all">АУДАН.</label>
                 </div>
 
                 <div id="rating-list-container" class="space-y-3"></div>
@@ -230,56 +214,57 @@
     </main>
 </div>
 
-<!-- Simple Notification -->
-<div id="toast" class="fixed bottom-5 right-5 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl opacity-0 transition-all duration-300 z-[70] pointer-events-none"></div>
+<div id="toast" class="fixed bottom-5 right-5 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl opacity-0 transition-all z-[70] pointer-events-none"></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, collection, onSnapshot, addDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, collection, onSnapshot, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Firebase configuration - will be provided by environment or hardcoded here
-    const firebaseConfig = JSON.parse(__firebase_config);
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'marapat-district-v1';
-
-    let user = null;
+    let db = null;
+    let auth = null;
+    let appId = typeof __app_id !== 'undefined' ? __app_id : "marapat-district-app";
     let data = { schools: [], teachers: [], students: [], achievements: [] };
     let currentRatingView = 'school';
+    let currentOwnerType = 'student';
 
-    const initAuth = async () => {
+    const startApp = async () => {
         try {
+            const firebaseConfig = JSON.parse(__firebase_config);
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                 await signInWithCustomToken(auth, __initial_auth_token);
             } else {
                 await signInAnonymously(auth);
             }
-        } catch(e) { console.error("Firebase Auth Error:", e); }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) setupListeners();
+            });
+        } catch (e) { console.error("Firebase қатесі:", e); }
     };
-    initAuth();
 
-    onAuthStateChanged(auth, u => {
-        user = u;
-        if (user) setupListeners();
-    });
+    const setupListeners = () => {
+        if (!db || !auth.currentUser) return;
+        const getCollRef = (name) => collection(db, 'artifacts', appId, 'public', 'data', name);
+        const errHandler = (err) => console.error("Firestore қатесі:", err);
 
-    function setupListeners() {
-        const publicPath = (coll) => collection(db, 'artifacts', appId, 'public', 'data', coll);
-        
-        onSnapshot(publicPath('schools'), s => { data.schools = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); });
-        onSnapshot(publicPath('teachers'), s => { data.teachers = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); });
-        onSnapshot(publicPath('students'), s => { data.students = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); });
-        onSnapshot(publicPath('achievements'), s => { data.achievements = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); });
-    }
+        onSnapshot(getCollRef('schools'), s => { data.schools = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); }, errHandler);
+        onSnapshot(getCollRef('teachers'), s => { data.teachers = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); }, errHandler);
+        onSnapshot(getCollRef('students'), s => { data.students = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); }, errHandler);
+        onSnapshot(getCollRef('achievements'), s => { data.achievements = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); }, errHandler);
+    };
 
     window.switchTab = (id) => {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
         document.getElementById(`tab-${id}`).classList.remove('hidden');
         document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-        const btn = Array.from(document.querySelectorAll('.sidebar-link')).find(b => b.getAttribute('onclick').includes(id));
-        if (btn) btn.classList.add('active');
+        const activeLink = Array.from(document.querySelectorAll('.sidebar-link')).find(b => b.getAttribute('onclick').includes(id));
+        if (activeLink) activeLink.classList.add('active');
+        if (window.innerWidth < 768) document.getElementById('sidebar').classList.add('hidden');
     };
 
     window.setRatingView = (v) => {
@@ -289,125 +274,199 @@
         renderAll();
     };
 
+    window.setOwnerType = (type) => {
+        currentOwnerType = type;
+        const sBtn = document.getElementById('btn-type-student');
+        const tBtn = document.getElementById('btn-type-teacher');
+        
+        if (type === 'student') {
+            sBtn.className = "flex-1 py-2 px-4 rounded-lg border-2 border-blue-600 bg-blue-600 text-white font-bold transition-all";
+            tBtn.className = "flex-1 py-2 px-4 rounded-lg border-2 border-slate-200 text-slate-400 font-bold transition-all";
+        } else {
+            tBtn.className = "flex-1 py-2 px-4 rounded-lg border-2 border-green-600 bg-green-600 text-white font-bold transition-all";
+            sBtn.className = "flex-1 py-2 px-4 rounded-lg border-2 border-slate-200 text-slate-400 font-bold transition-all";
+        }
+        updateOwnerList();
+    };
+
+    window.updateOwnerList = () => {
+        const schoolName = document.getElementById('sel-school-filter').value;
+        const ownerSelect = document.getElementById('sel-owner-final');
+        
+        if (!schoolName) {
+            ownerSelect.innerHTML = '<option value="">Алдымен мектепті таңдаңыз...</option>';
+            return;
+        }
+
+        const source = currentOwnerType === 'student' ? data.students : data.teachers;
+        const filtered = source.filter(item => item.school === schoolName).sort((a,b) => a.name.localeCompare(b.name));
+
+        if (filtered.length === 0) {
+            ownerSelect.innerHTML = `<option value="">Бұл мектепте ${currentOwnerType === 'student' ? 'оқушылар' : 'мұғалімдер'} табылмады</option>`;
+        } else {
+            ownerSelect.innerHTML = '<option value="">Адамды таңдаңыз...</option>' + 
+                filtered.map(o => `<option value="${o.name}|${o.school}">${o.name}</option>`).join('');
+        }
+    };
+
     window.saveToCloud = async (type) => {
-        if (!user) return;
-        const collRef = collection(db, 'artifacts', appId, 'public', 'data', type);
+        if (!db || !auth.currentUser) return;
+        let val = ""; let payload = {};
         
         if (type === 'schools') {
-            const name = document.getElementById('in-school').value.trim();
-            if (name) { await addDoc(collRef, { name }); document.getElementById('in-school').value = ''; }
+            val = document.getElementById('in-school').value.trim();
+            payload = { name: val };
         } else if (type === 'teachers') {
-            const name = document.getElementById('in-teacher-name').value.trim();
+            val = document.getElementById('in-teacher-name').value.trim();
             const school = document.getElementById('sel-school-teacher').value;
-            if (name && school) { await addDoc(collRef, { name, school }); document.getElementById('in-teacher-name').value = ''; }
+            if (!school) { showToast("Мектепті таңдаңыз"); return; }
+            payload = { name: val, school: school };
         } else if (type === 'students') {
-            const name = document.getElementById('in-student-name').value.trim();
+            val = document.getElementById('in-student-name').value.trim();
             const school = document.getElementById('sel-school-student').value;
-            if (name && school) { await addDoc(collRef, { name, school }); document.getElementById('in-student-name').value = ''; }
+            if (!school) { showToast("Мектепті таңдаңыз"); return; }
+            payload = { name: val, school: school };
         }
-        showToast("Мәлімет базаға сақталды");
+
+        if (val) {
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', type), payload);
+                showToast("Сақталды");
+                document.querySelectorAll('input').forEach(i => i.value = "");
+            } catch (e) { showToast("Қате: " + e.message); }
+        }
     };
 
     window.registerAchievement = async () => {
-        const sch = document.getElementById('sel-school-final').value;
-        const owner = document.getElementById('in-owner-name').value.trim();
+        if (!db || !auth.currentUser) return;
+        const ownerInfo = document.getElementById('sel-owner-final').value;
         const comp = document.getElementById('in-comp-name').value.trim();
-        const score = parseInt(document.getElementById('sel-level').value);
-        const lvl = document.getElementById('sel-level').options[document.getElementById('sel-level').selectedIndex].text.split(' ')[0];
         
-        if (!sch || !owner || !comp) { showToast("Барлық өрісті толтырыңыз"); return; }
+        if (!ownerInfo || !comp) {
+            showToast("Өрістерді толтырыңыз");
+            return;
+        }
 
-        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'achievements'), {
-            school: sch,
-            ownerName: owner,
+        const [ownerName, school] = ownerInfo.split('|');
+
+        const payload = {
+            school: school,
+            ownerName: ownerName,
             competitionName: comp,
-            level: lvl,
-            score: score,
+            score: parseInt(document.getElementById('sel-level').value),
+            level: document.getElementById('sel-level').options[document.getElementById('sel-level').selectedIndex].text.split(' ')[0],
+            ownerType: currentOwnerType, 
             timestamp: Date.now()
-        });
+        };
 
-        document.getElementById('in-owner-name').value = '';
-        document.getElementById('in-comp-name').value = '';
-        showToast("Жетістік сәтті тіркелді");
-        switchTab('dashboard');
+        try {
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'achievements'), payload);
+            showToast("Жетістік тіркелді");
+            switchTab('dashboard');
+            document.getElementById('in-comp-name').value = "";
+            document.getElementById('sel-school-filter').value = "";
+            updateOwnerList();
+        } catch (e) { showToast("Қате: " + e.message); }
+    };
+
+    window.removeItem = async (coll, id) => {
+        if (db && auth.currentUser && confirm('Өшіруді растайсыз ба?')) {
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', coll, id));
+        }
     };
 
     window.renderAll = () => {
-        // Stats update
+        if (!document.getElementById('stat-students')) return;
+
         document.getElementById('stat-students').innerText = data.students.length;
         document.getElementById('stat-teachers').innerText = data.teachers.length;
-        document.getElementById('stat-schools').innerText = data.schools.length;
         document.getElementById('stat-achievements').innerText = data.achievements.length;
+        document.getElementById('stat-schools').innerText = data.schools.length;
 
-        // Level Stats in Ratings (RESTORED)
+        const schSorted = [...data.schools].sort((a,b) => a.name.localeCompare(b.name));
+        const schOpts = '<option value="">Мектепті таңдаңыз</option>' + schSorted.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+        ['sel-school-teacher', 'sel-school-student', 'sel-school-filter'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                const curVal = el.value;
+                el.innerHTML = schOpts;
+                el.value = curVal;
+            }
+        });
+
+        document.getElementById('list-schools').innerHTML = data.schools.map(s => `<li class="p-2 border rounded flex justify-between bg-white text-xs items-center"><span class="truncate">${s.name}</span><button onclick="removeItem('schools','${s.id}')">❌</button></li>`).join('');
+        document.getElementById('list-teachers').innerHTML = data.teachers.map(t => `<li class="p-2 border rounded flex justify-between bg-white text-xs items-center"><div><b>${t.name}</b><br><small>${t.school}</small></div><button onclick="removeItem('teachers','${t.id}')">❌</button></li>`).join('');
+        document.getElementById('list-students').innerHTML = data.students.map(s => `<li class="p-2 border rounded flex justify-between bg-white text-xs items-center"><div><b>${s.name}</b><br><small>${s.school}</small></div><button onclick="removeItem('students','${s.id}')">❌</button></li>`).join('');
+
+        // --- РЕЙТИНГТЕРДІ ЕКШЕУ ЛОГИКАСЫ ---
+        const filters = { 
+            'Халықаралық': document.getElementById('f-intl').checked, 
+            'Республикалық': document.getElementById('f-rep').checked, 
+            'Облыстық': document.getElementById('f-reg').checked, 
+            'Аудандық': document.getElementById('f-dist').checked 
+        };
+
+        const res = {};
+        data.achievements.filter(a => {
+            // Деңгей сүзгісі
+            const levelMatch = filters[a.level];
+            
+            // ТҮР СҮЗГІСІ (Мұғалім/Оқушы бөлек көрсету үшін)
+            // Егер мектеп рейтингі болса - барлығын қосамыз. 
+            // Егер мұғалім/оқушы рейтингі болса - тек сол түрді аламыз.
+            let typeMatch = true;
+            if (currentRatingView === 'teacher') typeMatch = (a.ownerType === 'teacher');
+            if (currentRatingView === 'student') typeMatch = (a.ownerType === 'student');
+            
+            return levelMatch && typeMatch;
+        }).forEach(a => {
+            const key = currentRatingView === 'school' ? a.school : a.ownerName;
+            if (key) {
+                // Егер адамдар рейтингі болса, мектеп атын жанына қосып қоямыз
+                const displayKey = currentRatingView === 'school' ? key : `${key} (${a.school})`;
+                res[displayKey] = (res[displayKey] || 0) + a.score;
+            }
+        });
+
+        const sorted = Object.entries(res).sort((a,b) => b[1] - a[1]);
+        document.getElementById('rating-list-container').innerHTML = sorted.map((r, i) => `
+            <div class="flex justify-between items-center p-4 bg-white border rounded-xl rating-item shadow-sm">
+                <div class="flex items-center space-x-3">
+                    <span class="font-bold ${i < 3 ? 'text-blue-600' : 'text-slate-400'}">#${i+1}</span>
+                    <span class="font-medium text-slate-700">${r[0]}</span>
+                </div>
+                <div class="font-black text-blue-600">${r[1]} <small class="text-slate-400">Б</small></div>
+            </div>
+        `).join('') || '<p class="text-center text-slate-400 py-10">Бұл санатта мәлімет жоқ</p>';
+
+        // Соңғы әрекеттер кестесі
+        document.getElementById('activity-table').innerHTML = [...data.achievements].sort((a,b) => b.timestamp - a.timestamp).slice(0, 10).map(a => `
+            <tr>
+                <td class="px-6 py-3"><b>${a.ownerName}</b><br><small class="text-slate-400">${a.competitionName}</small></td>
+                <td class="px-6 py-3">${a.school}</td>
+                <td class="px-6 py-3 text-center">
+                    <span class="px-2 py-1 rounded text-[10px] font-bold ${a.ownerType === 'teacher' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'}">
+                        ${a.ownerType === 'teacher' ? 'МҰҒАЛІМ' : 'ОҚУШЫ'}
+                    </span>
+                </td>
+                <td class="px-6 py-3 text-right font-bold text-blue-600">${a.score}</td>
+                <td class="px-6 py-3 text-center"><button onclick="removeItem('achievements','${a.id}')">🗑️</button></td>
+            </tr>
+        `).join('');
+        
         document.getElementById('stat-intl').innerText = data.achievements.filter(a => a.level.includes('Халықаралық')).length;
         document.getElementById('stat-rep').innerText = data.achievements.filter(a => a.level.includes('Республикалық')).length;
         document.getElementById('stat-reg').innerText = data.achievements.filter(a => a.level.includes('Облыстық')).length;
         document.getElementById('stat-dist').innerText = data.achievements.filter(a => a.level.includes('Аудандық')).length;
-
-        // Populate selects
-        const schList = [...data.schools].sort((a,b) => a.name.localeCompare(b.name));
-        const schOpts = '<option value="" disabled selected>Мектепті таңдаңыз</option>' + schList.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-        ['sel-school-teacher', 'sel-school-student', 'sel-school-final'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el && (el.innerHTML === "" || el.children.length <= 1)) el.innerHTML = schOpts;
-        });
-
-        // DB Lists
-        document.getElementById('list-schools').innerHTML = data.schools.map(s => `<li class="p-2 border rounded flex justify-between items-center text-xs bg-white"><span>${s.name}</span><button onclick="removeItem('schools','${s.id}')" class="text-slate-300 hover:text-red-500">❌</button></li>`).join('');
-        document.getElementById('list-teachers').innerHTML = data.teachers.map(t => `<li class="p-2 border rounded flex justify-between items-center text-xs bg-white"><span>${t.name} (${t.school})</span><button onclick="removeItem('teachers','${t.id}')" class="text-slate-300 hover:text-red-500">❌</button></li>`).join('');
-        document.getElementById('list-students').innerHTML = data.students.map(s => `<li class="p-2 border rounded flex justify-between items-center text-xs bg-white"><span>${s.name} (${s.school})</span><button onclick="removeItem('students','${s.id}')" class="text-slate-300 hover:text-red-500">❌</button></li>`).join('');
-
-        // Rating calculation
-        const filters = {
-            'Халықаралық': document.getElementById('f-intl').checked,
-            'Республикалық': document.getElementById('f-rep').checked,
-            'Облыстық': document.getElementById('f-reg').checked,
-            'Аудандық': document.getElementById('f-dist').checked
-        };
-
-        const scoreMap = {};
-        data.achievements.filter(a => filters[a.level]).forEach(a => {
-            const key = (currentRatingView === 'school') ? a.school : a.ownerName;
-            scoreMap[key] = (scoreMap[key] || 0) + a.score;
-        });
-
-        const sortedScores = Object.entries(scoreMap).sort((a,b) => b[1] - a[1]);
-        document.getElementById('rating-list-container').innerHTML = sortedScores.map((r, i) => `
-            <div class="flex justify-between items-center p-4 bg-white border border-slate-100 rounded-xl rating-item shadow-sm">
-                <div class="flex items-center space-x-3">
-                    <span class="font-bold text-blue-600 w-6">${i+1}</span>
-                    <span class="font-medium text-slate-700">${r[0]}</span>
-                </div>
-                <div class="font-black text-blue-600">${r[1]} <span class="text-[10px] text-slate-400 uppercase">балл</span></div>
-            </div>
-        `).join('') || '<p class="text-center py-10 text-slate-400 text-sm">Бұл санатта деректер жоқ</p>';
-
-        // Dashboard table
-        document.getElementById('activity-table').innerHTML = [...data.achievements].sort((a,b) => b.timestamp - a.timestamp).slice(0, 8).map(a => `
-            <tr class="hover:bg-slate-50">
-                <td class="px-6 py-3"><b>${a.ownerName}</b><br><small class="text-slate-400 text-[10px]">${a.competitionName}</small></td>
-                <td class="px-6 py-3 text-slate-600">${a.school}</td>
-                <td class="px-6 py-3"><span class="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-bold">${a.level}</span></td>
-                <td class="px-6 py-3 text-right font-bold text-blue-600">+${a.score}</td>
-                <td class="px-6 py-3 text-center"><button onclick="removeItem('achievements','${a.id}')" class="text-slate-300 hover:text-red-500">🗑️</button></td>
-            </tr>
-        `).join('');
-    };
-
-    window.removeItem = async (coll, id) => {
-        if (confirm('Бұл мәліметті өшіруді растайсыз ба?')) {
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', coll, id));
-            showToast("Өшірілді");
-        }
     };
 
     function showToast(m) {
         const t = document.getElementById('toast');
-        t.innerText = m; t.style.opacity = '1';
-        t.style.transform = 'translateY(-10px)';
-        setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(0)'; }, 3000);
+        t.innerText = m; t.classList.add('opacity-100');
+        setTimeout(() => t.classList.remove('opacity-100'), 3000);
     }
+
+    startApp();
 </script>
 </body>
 </html>
