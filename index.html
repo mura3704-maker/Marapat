@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>МАРАПАТ - Аудандық платформа</title>
+    <title>МАРАПАТ - Аудандық платформа (Автономды)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -42,12 +42,11 @@
             padding-bottom: 2rem;
         }
         
-        /* Category Badge Colors */
-        .cat-master { background-color: #ef4444; } /* Шебер - Қызыл */
-        .cat-researcher { background-color: #f59e0b; } /* Зерттеуші - Сарғылт */
-        .cat-expert { background-color: #10b981; } /* Сарапшы - Жасыл */
-        .cat-moderator { background-color: #3b82f6; } /* Модератор - Көк */
-        .cat-teacher { background-color: #64748b; } /* Педагог - Сұр */
+        .cat-master { background-color: #ef4444; }
+        .cat-researcher { background-color: #f59e0b; }
+        .cat-expert { background-color: #10b981; }
+        .cat-moderator { background-color: #3b82f6; }
+        .cat-teacher { background-color: #64748b; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-900">
@@ -85,27 +84,25 @@
     <main class="flex-1 p-4 md:p-8 overflow-y-auto">
         <!-- Dashboard -->
         <section id="tab-dashboard" class="tab-content space-y-6 pb-12">
-            <!-- Main Stats -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="card p-6 border-l-4 border-blue-500">
                     <p class="text-sm font-medium text-slate-500">Оқушылар</p>
-                    <h3 id="stat-students" class="text-2xl font-bold mt-1">...</h3>
+                    <h3 id="stat-students" class="text-2xl font-bold mt-1">0</h3>
                 </div>
                 <div class="card p-6 border-l-4 border-green-500">
                     <p class="text-sm font-medium text-slate-500">Мұғалімдер</p>
-                    <h3 id="stat-teachers" class="text-2xl font-bold mt-1">...</h3>
+                    <h3 id="stat-teachers" class="text-2xl font-bold mt-1">0</h3>
                 </div>
                 <div class="card p-6 border-l-4 border-purple-500">
                     <p class="text-sm font-medium text-slate-500">Жетістіктер</p>
-                    <h3 id="stat-achievements" class="text-2xl font-bold mt-1">...</h3>
+                    <h3 id="stat-achievements" class="text-2xl font-bold mt-1">0</h3>
                 </div>
                 <div class="card p-6 border-l-4 border-orange-500">
                     <p class="text-sm font-medium text-slate-500">Мектептер</p>
-                    <h3 id="stat-schools" class="text-2xl font-bold mt-1">...</h3>
+                    <h3 id="stat-schools" class="text-2xl font-bold mt-1">0</h3>
                 </div>
             </div>
 
-            <!-- Teacher Categories Stats -->
             <div class="card p-6">
                 <h4 class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wider flex items-center">
                     <i class="fas fa-user-tie mr-2 text-blue-500"></i> Мұғалімдердің санаты бойынша статистика
@@ -157,7 +154,13 @@
 
         <!-- Database Management -->
         <section id="tab-database" class="tab-content hidden space-y-6 pb-12">
-            <h2 class="text-2xl font-bold text-slate-800">Базаны басқару</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <h2 class="text-2xl font-bold text-slate-800">Базаны басқару</h2>
+                <button onclick="clearAllData()" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-600 hover:text-white transition-all flex items-center">
+                    <i class="fas fa-trash-alt mr-2"></i> Базаны толық тазарту
+                </button>
+            </div>
+            
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Schools -->
                 <div class="card p-6 flex flex-col h-[600px]">
@@ -166,7 +169,7 @@
                     </h3>
                     <div class="flex space-x-2 mb-4">
                         <input id="in-school" type="text" placeholder="Мектеп атауы" class="flex-1 border p-2 rounded text-sm outline-none focus:ring-1 focus:ring-blue-500">
-                        <button onclick="saveToCloud('schools')" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-blue-700">Қосу</button>
+                        <button onclick="saveLocal('schools')" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-blue-700">Қосу</button>
                     </div>
                     <div class="flex-1 overflow-y-auto pr-2">
                         <ul id="list-schools" class="space-y-2"></ul>
@@ -209,7 +212,7 @@
                             <option value="Модератор">Педагог-модератор</option>
                             <option value="Педагог">Педагог</option>
                         </select>
-                        <button onclick="saveToCloud('teachers')" class="w-full bg-green-600 text-white py-2 rounded text-sm font-semibold hover:bg-green-700">Сақтау</button>
+                        <button onclick="saveLocal('teachers')" class="w-full bg-green-600 text-white py-2 rounded text-sm font-semibold hover:bg-green-700">Сақтау</button>
                     </div>
                     <div class="flex-1 overflow-y-auto pr-2">
                         <ul id="list-teachers" class="space-y-2"></ul>
@@ -226,19 +229,12 @@
                         <input id="in-student-name" type="text" placeholder="Аты-жөні" class="w-full border p-2 rounded text-sm outline-none focus:ring-1 focus:ring-purple-500">
                         <select id="sel-student-class" class="w-full border p-2 rounded text-sm outline-none focus:ring-1 focus:ring-purple-500">
                             <option value="" disabled selected>Сыныбын таңдаңыз</option>
-                            <option value="1">1-сынып</option>
-                            <option value="2">2-сынып</option>
-                            <option value="3">3-сынып</option>
-                            <option value="4">4-сынып</option>
-                            <option value="5">5-сынып</option>
-                            <option value="6">6-сынып</option>
-                            <option value="7">7-сынып</option>
-                            <option value="8">8-сынып</option>
-                            <option value="9">9-сынып</option>
-                            <option value="10">10-сынып</option>
-                            <option value="11">11-сынып</option>
+                            <option value="1">1-сынып</option><option value="2">2-сынып</option><option value="3">3-сынып</option>
+                            <option value="4">4-сынып</option><option value="5">5-сынып</option><option value="6">6-сынып</option>
+                            <option value="7">7-сынып</option><option value="8">8-сынып</option><option value="9">9-сынып</option>
+                            <option value="10">10-сынып</option><option value="11">11-сынып</option>
                         </select>
-                        <button onclick="saveToCloud('students')" class="w-full bg-purple-600 text-white py-2 rounded text-sm font-semibold hover:bg-purple-700">Сақтау</button>
+                        <button onclick="saveLocal('students')" class="w-full bg-purple-600 text-white py-2 rounded text-sm font-semibold hover:bg-purple-700">Сақтау</button>
                     </div>
                     <div class="flex-1 overflow-y-auto pr-2">
                         <ul id="list-students" class="space-y-2"></ul>
@@ -298,7 +294,6 @@
         <section id="tab-ratings" class="tab-content hidden space-y-6 pb-20">
             <h2 class="text-2xl font-bold text-slate-800 text-center md:text-left">Рейтингтер және Статистика</h2>
 
-            <!-- Level Stats Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="card p-4 border-t-4 border-blue-600 bg-blue-50/30">
                     <div class="flex justify-between items-start">
@@ -372,9 +367,6 @@
                     </h3>
                     <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold uppercase" id="rating-count">... жазба</div>
                 </div>
-                <div class="bg-blue-50 border border-blue-100 p-3 rounded-lg mb-4 text-xs text-blue-700 flex items-center">
-                    <i class="fas fa-info-circle mr-2"></i> Мәліметті көру үшін тізімдегі нысанның үстінен басыңыз
-                </div>
                 <div id="rating-list-container" class="space-y-3 pb-10"></div>
             </div>
         </section>
@@ -404,84 +396,74 @@
 
 <div id="toast" class="fixed bottom-5 right-5 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl opacity-0 transition-all duration-300 z-[70] pointer-events-none translate-y-10"></div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+<script>
+    // Local Database Logic
+    let data = {
+        schools: JSON.parse(localStorage.getItem('m_schools')) || [],
+        teachers: JSON.parse(localStorage.getItem('m_teachers')) || [],
+        students: JSON.parse(localStorage.getItem('m_students')) || [],
+        achievements: JSON.parse(localStorage.getItem('m_achievements')) || []
+    };
 
-    const firebaseConfig = JSON.parse(__firebase_config);
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'marapat-district-app';
-
-    let user = null;
-    let data = { schools: [], teachers: [], students: [], achievements: [] };
     let currentAchType = 'student';
     let currentRatingView = 'school';
 
-    const initAuth = async () => {
-        try {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
-            }
-        } catch (e) { console.error(e); }
-    };
-    initAuth();
-
-    onAuthStateChanged(auth, u => {
-        user = u;
-        if (user) setupListeners();
-    });
-
-    function setupListeners() {
-        const publicRef = (coll) => collection(db, 'artifacts', appId, 'public', 'data', coll);
-        
-        onSnapshot(publicRef('schools'), s => { data.schools = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); }, e => console.error(e));
-        onSnapshot(publicRef('teachers'), s => { data.teachers = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); }, e => console.error(e));
-        onSnapshot(publicRef('students'), s => { data.students = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); }, e => console.error(e));
-        onSnapshot(publicRef('achievements'), s => { data.achievements = s.docs.map(d => ({id:d.id, ...d.data()})); renderAll(); }, e => console.error(e));
+    function saveToStorage() {
+        localStorage.setItem('m_schools', JSON.stringify(data.schools));
+        localStorage.setItem('m_teachers', JSON.stringify(data.teachers));
+        localStorage.setItem('m_students', JSON.stringify(data.students));
+        localStorage.setItem('m_achievements', JSON.stringify(data.achievements));
+        renderAll();
     }
 
-    window.saveToCloud = async (type) => {
-        if (!user) return;
-        const collRef = collection(db, 'artifacts', appId, 'public', 'data', type);
-        try {
-            if (type === 'schools') {
-                const name = document.getElementById('in-school').value;
-                if (!name) return;
-                await addDoc(collRef, { name, createdAt: Date.now() });
-                document.getElementById('in-school').value = '';
-            } else if (type === 'teachers') {
-                const name = document.getElementById('in-teacher-name').value;
-                const subj = document.getElementById('sel-teacher-subj').value;
-                const category = document.getElementById('sel-teacher-cat').value;
-                const school = document.getElementById('sel-school-teacher').value;
-                if (!name || !subj || !category || !school) { showToast("Өрістерді толтырыңыз"); return; }
-                await addDoc(collRef, { name, subj, category, school });
-                document.getElementById('in-teacher-name').value = '';
-                document.getElementById('sel-teacher-subj').selectedIndex = 0;
-                document.getElementById('sel-teacher-cat').selectedIndex = 0;
-            } else if (type === 'students') {
-                const name = document.getElementById('in-student-name').value;
-                const cls = document.getElementById('sel-student-class').value;
-                const school = document.getElementById('sel-school-student').value;
-                if (!name || !cls || !school) return;
-                await addDoc(collRef, { name, class: cls, school });
-                document.getElementById('in-student-name').value = '';
-            }
-            showToast("Сақталды");
-        } catch(e) { showToast("Қате"); }
+    // Базаны толық тазарту функциясы
+    window.clearAllData = () => {
+        if (!confirm('ЕСКЕРТУ: Барлық тіркелген деректер (мектептер, мұғалімдер, оқушылар және жетістіктер) біржола жойылады. Растайсыз ба?')) return;
+        
+        localStorage.removeItem('m_schools');
+        localStorage.removeItem('m_teachers');
+        localStorage.removeItem('m_students');
+        localStorage.removeItem('m_achievements');
+        
+        data = { schools: [], teachers: [], students: [], achievements: [] };
+        
+        showToast("Деректер қоры тазартылды");
+        renderAll();
+        switchTab('dashboard');
     };
 
-    window.removeItem = async (type, id) => {
-        if (!confirm('Өшіруді растайсыз ба?')) return;
-        try {
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', type, id));
-            showToast("Жойылды");
-        } catch(e) { showToast("Қате"); }
+    window.saveLocal = (type) => {
+        const id = crypto.randomUUID();
+        if (type === 'schools') {
+            const name = document.getElementById('in-school').value;
+            if (!name) return;
+            data.schools.push({ id, name, createdAt: Date.now() });
+            document.getElementById('in-school').value = '';
+        } else if (type === 'teachers') {
+            const name = document.getElementById('in-teacher-name').value;
+            const subj = document.getElementById('sel-teacher-subj').value;
+            const category = document.getElementById('sel-teacher-cat').value;
+            const school = document.getElementById('sel-school-teacher').value;
+            if (!name || !subj || !category || !school) { showToast("Өрістерді толтырыңыз"); return; }
+            data.teachers.push({ id, name, subj, category, school });
+            document.getElementById('in-teacher-name').value = '';
+        } else if (type === 'students') {
+            const name = document.getElementById('in-student-name').value;
+            const cls = document.getElementById('sel-student-class').value;
+            const school = document.getElementById('sel-school-student').value;
+            if (!name || !cls || !school) return;
+            data.students.push({ id, name, class: cls, school });
+            document.getElementById('in-student-name').value = '';
+        }
+        showToast("Сақталды");
+        saveToStorage();
+    };
+
+    window.removeItem = (type, id) => {
+        if (!confirm('Жоюды растайсыз ба?')) return;
+        data[type] = data[type].filter(item => item.id !== id);
+        showToast("Жойылды");
+        saveToStorage();
     };
 
     window.switchTab = (id) => {
@@ -528,7 +510,7 @@
             data.teachers.filter(t => t.school === sch).map(t => `<option value="${t.id}">${t.name} (${t.category})</option>`).join('');
     };
 
-    window.registerAchievement = async () => {
+    window.registerAchievement = () => {
         const sch = document.getElementById('sel-school-final').value;
         const compName = document.getElementById('in-comp-name').value;
         const score = parseInt(document.getElementById('sel-level').value);
@@ -537,6 +519,7 @@
         if (!compName) { showToast("Жарыс атауын жазыңыз"); return; }
 
         let payload = { 
+            id: crypto.randomUUID(),
             type: currentAchType, 
             school: sch, 
             level: lvl, 
@@ -560,12 +543,11 @@
             payload.extra = `${tObj.subj} | ${tObj.category}`;
         }
 
-        try {
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'achievements'), payload);
-            showToast("Тіркелді");
-            document.getElementById('in-comp-name').value = '';
-            switchTab('dashboard');
-        } catch(e) { showToast("Қате"); }
+        data.achievements.push(payload);
+        showToast("Тіркелді");
+        document.getElementById('in-comp-name').value = '';
+        saveToStorage();
+        switchTab('dashboard');
     };
 
     window.showDetails = (targetName) => {
@@ -585,108 +567,73 @@
         if (currentRatingView === 'school') {
             details = data.achievements.filter(a => a.school === targetName && filters[a.level]);
             mTitle.innerText = targetName;
-            mSub.innerText = "Мектептің барлық жетістіктері";
         } else {
             details = data.achievements.filter(a => a.ownerName === targetName && filters[a.level]);
             mTitle.innerText = targetName;
-            mSub.innerText = "Жеке жетістіктер тізімі";
         }
 
         details.sort((a,b) => b.timestamp - a.timestamp);
-
-        if (details.length === 0) {
-            mContent.innerHTML = `<div class="p-8 text-center text-slate-400 italic">Сүзгіге сәйкес жетістіктер табылған жоқ.</div>`;
-        } else {
-            mContent.innerHTML = details.map(d => `
-                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100 transition-colors">
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-blue-600 text-white w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shadow-sm">
-                            ${d.level[0]}
-                        </div>
-                        <div>
-                            <p class="font-bold text-slate-800 text-sm">${d.competitionName || 'Атаусыз жарыс'}</p>
-                            <p class="text-[10px] text-slate-500">${d.level} деңгей • ${new Date(d.timestamp).toLocaleDateString()}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="text-right">
-                            <span class="font-black text-blue-600 text-base">${d.score}</span>
-                            <span class="text-[8px] block text-slate-400 uppercase font-bold">Балл</span>
-                        </div>
+        mContent.innerHTML = details.length ? details.map(d => `
+            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100 transition-colors">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-600 text-white w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shadow-sm">${d.level[0]}</div>
+                    <div>
+                        <p class="font-bold text-slate-800 text-sm">${d.competitionName}</p>
+                        <p class="text-[10px] text-slate-500">${d.level} | ${new Date(d.timestamp).toLocaleDateString()}</p>
                     </div>
                 </div>
-            `).join('');
-        }
+                <div class="text-right"><span class="font-black text-blue-600 text-base">${d.score}</span></div>
+            </div>
+        `).join('') : '<p class="text-center text-slate-400 py-8 italic">Деректер жоқ</p>';
+        
         modal.classList.remove('hidden');
     };
 
-    window.closeModal = () => {
-        document.getElementById('details-modal').classList.add('hidden');
-    };
+    window.closeModal = () => document.getElementById('details-modal').classList.add('hidden');
 
     function renderAll() {
-        // Basic Stats
         document.getElementById('stat-students').innerText = data.students.length;
         document.getElementById('stat-teachers').innerText = data.teachers.length;
         document.getElementById('stat-schools').innerText = data.schools.length;
         document.getElementById('stat-achievements').innerText = data.achievements.length;
 
-        // Teacher Categories Stats Calculation
-        const catCounts = {
-            'Шебер': 0,
-            'Зерттеуші': 0,
-            'Сарапшы': 0,
-            'Модератор': 0,
-            'Педагог': 0
-        };
-        data.teachers.forEach(t => {
-            if (catCounts.hasOwnProperty(t.category)) catCounts[t.category]++;
+        const catCounts = { 'Шебер': 0, 'Зерттеуші': 0, 'Сарапшы': 0, 'Модератор': 0, 'Педагог': 0 };
+        data.teachers.forEach(t => { if (catCounts.hasOwnProperty(t.category)) catCounts[t.category]++; });
+        Object.keys(catCounts).forEach(k => {
+            const map = {'Шебер':'sheber', 'Зерттеуші':'zertteushi', 'Сарапшы':'sarapshy', 'Модератор':'moderator', 'Педагог':'pedagog'};
+            if (document.getElementById(`count-cat-${map[k]}`)) document.getElementById(`count-cat-${map[k]}`).innerText = catCounts[k];
         });
-
-        document.getElementById('count-cat-sheber').innerText = catCounts['Шебер'];
-        document.getElementById('count-cat-zertteushi').innerText = catCounts['Зерттеуші'];
-        document.getElementById('count-cat-sarapshy').innerText = catCounts['Сарапшы'];
-        document.getElementById('count-cat-moderator').innerText = catCounts['Модератор'];
-        document.getElementById('count-cat-pedagog').innerText = catCounts['Педагог'];
 
         const counts = { 'Халықаралық': 0, 'Республикалық': 0, 'Облыстық': 0, 'Аудандық': 0 };
         data.achievements.forEach(a => { if(counts[a.level] !== undefined) counts[a.level]++; });
-        
         document.getElementById('stat-lvl-intl').innerText = counts['Халықаралық'];
         document.getElementById('stat-lvl-rep').innerText = counts['Республикалық'];
         document.getElementById('stat-lvl-reg').innerText = counts['Облыстық'];
         document.getElementById('stat-lvl-dist').innerText = counts['Аудандық'];
 
-        document.getElementById('list-schools').innerHTML = data.schools.map(s => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-sm mb-1"><span>${s.name}</span><button onclick="removeItem('schools','${s.id}')" class="text-red-400 p-1 hover:text-red-600 transition-colors"><i class="fas fa-trash"></i></button></li>`).join('');
-        document.getElementById('list-teachers').innerHTML = data.teachers.map(t => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-xs mb-1"><span>${t.name} <span class="text-blue-500 font-bold">[${t.category}]</span></span><button onclick="removeItem('teachers','${t.id}')" class="text-red-400 p-1"><i class="fas fa-trash"></i></button></li>`).join('');
-        document.getElementById('list-students').innerHTML = data.students.map(s => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-sm mb-1"><span>${s.name} (${s.class})</span><button onclick="removeItem('students','${s.id}')" class="text-red-400 p-1 hover:text-red-600 transition-colors"><i class="fas fa-trash"></i></button></li>`).join('');
+        document.getElementById('list-schools').innerHTML = data.schools.map(s => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-sm mb-1"><span>${s.name}</span><button onclick="removeItem('schools','${s.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></li>`).join('');
+        document.getElementById('list-teachers').innerHTML = data.teachers.map(t => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-xs mb-1"><span>${t.name} <span class="text-blue-500 font-bold">[${t.category}]</span></span><button onclick="removeItem('teachers','${t.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></li>`).join('');
+        document.getElementById('list-students').innerHTML = data.students.map(s => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-sm mb-1"><span>${s.name} (${s.class})</span><button onclick="removeItem('students','${s.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></li>`).join('');
 
         const schOpt = '<option value="" disabled selected>Мектепті таңдаңыз</option>' + data.schools.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-        ['sel-school-teacher', 'sel-school-student', 'sel-school-final'].forEach(id => {
-            const el = document.getElementById(id);
-            if(el) el.innerHTML = schOpt;
-        });
+        ['sel-school-teacher', 'sel-school-student', 'sel-school-final'].forEach(id => document.getElementById(id).innerHTML = schOpt);
 
         const table = document.getElementById('activity-table');
-        if(table) {
-            table.innerHTML = [...data.achievements].sort((a,b)=>b.timestamp-a.timestamp).slice(0, 10).map(a => `
-                <tr class="text-sm border-b hover:bg-slate-50">
-                    <td class="px-6 py-3">
-                        <div class="font-bold text-slate-800">${a.ownerName}</div>
-                        <div class="text-[10px] text-slate-500 italic font-medium mt-0.5">
-                            <i class="fas fa-trophy mr-1 text-amber-500 scale-75"></i> ${a.competitionName || 'Атаусыз жарыс'}
-                        </div>
-                    </td>
-                    <td class="px-6 py-3 text-xs">
-                        <span class="block text-slate-700 font-medium">${a.school}</span>
-                        <span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded uppercase font-bold text-slate-500">${a.type === 'student' ? 'оқушы' : 'мұғалім'}</span>
-                    </td>
-                    <td class="px-6 py-3 text-blue-600 font-bold">${a.level}</td>
-                    <td class="px-6 py-3 text-right font-black text-slate-800">${a.score}</td>
-                    <td class="px-6 py-3 text-center"><button onclick="removeItem('achievements','${a.id}')" class="text-slate-300 hover:text-red-500 transition-colors"><i class="fas fa-trash"></i></button></td>
-                </tr>
-            `).join('');
-        }
+        table.innerHTML = [...data.achievements].sort((a,b)=>b.timestamp-a.timestamp).slice(0, 10).map(a => `
+            <tr class="text-sm border-b hover:bg-slate-50">
+                <td class="px-6 py-3">
+                    <div class="font-bold text-slate-800">${a.ownerName}</div>
+                    <div class="text-[10px] text-slate-500 italic mt-0.5"><i class="fas fa-trophy mr-1 text-amber-500"></i> ${a.competitionName}</div>
+                </td>
+                <td class="px-6 py-3 text-xs">
+                    <span class="block text-slate-700 font-medium">${a.school}</span>
+                    <span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded uppercase font-bold text-slate-500">${a.type === 'student' ? 'оқушы' : 'мұғалім'}</span>
+                </td>
+                <td class="px-6 py-3 text-blue-600 font-bold">${a.level}</td>
+                <td class="px-6 py-3 text-right font-black text-slate-800">${a.score}</td>
+                <td class="px-6 py-3 text-center"><button onclick="removeItem('achievements','${a.id}')" class="text-slate-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `).join('');
 
         const filters = { 
             'Халықаралық': document.getElementById('filter-intl').checked, 
@@ -695,72 +642,41 @@
             'Аудандық': document.getElementById('filter-dist').checked 
         };
 
-        const filteredAchievements = data.achievements.filter(a => filters[a.level]);
+        const filteredAch = data.achievements.filter(a => filters[a.level]);
         let results = [];
-        let titleText = "Мектептер рейтингі";
-        let icon = "fa-school";
-
+        
         if (currentRatingView === 'school') {
-            const schS = {}; 
-            data.schools.forEach(s => schS[s.name] = 0);
-            filteredAchievements.forEach(a => { if(schS[a.school] !== undefined) schS[a.school] += a.score; });
+            const schS = {}; data.schools.forEach(s => schS[s.name] = 0);
+            filteredAch.forEach(a => { if(schS[a.school] !== undefined) schS[a.school] += a.score; });
             results = Object.entries(schS).map(([name, score]) => ({ name, score, sub: 'Мектеп' }));
-            titleText = "Мектептер рейтингі";
         } else if (currentRatingView === 'teacher') {
-            const tcS = {};
-            filteredAchievements.filter(a => a.type === 'teacher').forEach(a => {
-                tcS[a.ownerName] = (tcS[a.ownerName] || 0) + a.score;
-            });
+            const tcS = {}; filteredAch.filter(a => a.type === 'teacher').forEach(a => { tcS[a.ownerName] = (tcS[a.ownerName] || 0) + a.score; });
             results = Object.entries(tcS).map(([name, score]) => {
                 const info = data.teachers.find(t => t.name === name);
-                return { name, score, sub: info ? `${info.category} | ${info.subj} | ${info.school}` : 'Мұғалім' };
+                return { name, score, sub: info ? `${info.category} | ${info.subj}` : 'Мұғалім' };
             });
-            titleText = "Мұғалімдер рейтингі";
-            icon = "fa-chalkboard-teacher";
         } else if (currentRatingView === 'student') {
-            const stS = {};
-            filteredAchievements.filter(a => a.type === 'student').forEach(a => {
-                stS[a.ownerName] = (stS[a.ownerName] || 0) + a.score;
-            });
+            const stS = {}; filteredAch.filter(a => a.type === 'student').forEach(a => { stS[a.ownerName] = (stS[a.ownerName] || 0) + a.score; });
             results = Object.entries(stS).map(([name, score]) => {
                 const info = data.students.find(s => s.name === name);
-                return { name, score, sub: info ? `${info.class}-сынып | ${info.school}` : 'Оқушы' };
+                return { name, score, sub: info ? `${info.class}-сынып` : 'Оқушы' };
             });
-            titleText = "Оқушылар рейтингі";
-            icon = "fa-user-graduate";
         }
 
         results.sort((a, b) => b.score - a.score);
-        document.getElementById('rating-title').innerHTML = `<i class="fas ${icon} mr-3 text-blue-500"></i> ${titleText}`;
         document.getElementById('rating-count').innerText = `${results.length} жазба`;
-
-        const listContainer = document.getElementById('rating-list-container');
-        if (results.length === 0) {
-            listContainer.innerHTML = `<div class="p-10 text-center text-slate-400 italic">Бұл санатта әзірге жетістіктер жоқ...</div>`;
-        } else {
-            listContainer.innerHTML = results.map((r, index) => `
-                <div onclick="showDetails('${r.name}')" class="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group animate-fadeIn">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 flex items-center justify-center rounded-full ${index < 3 ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-500'} font-bold text-sm shadow-sm">
-                            ${index + 1}
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">${r.name}</h4>
-                            <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">${r.sub}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="text-right">
-                            <span class="text-xl font-black text-blue-600">${r.score}</span>
-                            <p class="text-[9px] text-slate-400 uppercase font-bold tracking-tighter">Жалпы балл</p>
-                        </div>
-                        <div class="bg-slate-50 p-2 rounded-lg group-hover:bg-blue-50 transition-colors">
-                            <i class="fas fa-chevron-right text-slate-300 group-hover:text-blue-500 transition-all"></i>
-                        </div>
-                    </div>
+        document.getElementById('rating-list-container').innerHTML = results.length ? results.map((r, index) => `
+            <div onclick="showDetails('${r.name}')" class="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full ${index < 3 ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-500'} font-bold text-sm shadow-sm">${index + 1}</div>
+                    <div><h4 class="font-bold text-slate-800 group-hover:text-blue-600">${r.name}</h4><p class="text-[10px] text-slate-400 uppercase font-bold">${r.sub}</p></div>
                 </div>
-            `).join('');
-        }
+                <div class="flex items-center space-x-4">
+                    <div class="text-right"><span class="text-xl font-black text-blue-600">${r.score}</span></div>
+                    <div class="bg-slate-50 p-2 rounded-lg"><i class="fas fa-chevron-right text-slate-300"></i></div>
+                </div>
+            </div>
+        `).join('') : '<p class="text-center text-slate-400 py-10 italic">Деректер табылған жоқ</p>';
     }
 
     window.showToast = (m) => {
@@ -768,7 +684,8 @@
         t.innerText = m; t.style.opacity = '1'; t.style.transform = 'translateY(0)';
         setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(10px)'; }, 2000);
     };
-    window.renderAll = renderAll;
+
+    window.onload = renderAll;
 </script>
 </body>
 </html>
