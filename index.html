@@ -41,12 +41,6 @@
             overflow-y: auto;
             padding-bottom: 2rem;
         }
-        
-        .cat-master { background-color: #ef4444; }
-        .cat-researcher { background-color: #f59e0b; }
-        .cat-expert { background-color: #10b981; }
-        .cat-moderator { background-color: #3b82f6; }
-        .cat-teacher { background-color: #64748b; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-900">
@@ -276,14 +270,31 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">5. Байқау деңгейі</label>
-                            <select id="sel-level" class="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
-                                <option value="100">Халықаралық (100 балл)</option>
-                                <option value="80">Республикалық (80 балл)</option>
-                                <option value="60">Облыстық (60 балл)</option>
-                                <option value="40">Аудандық (40 балл)</option>
-                            </select>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Жарыс өткен күні</label>
+                            <input id="in-comp-date" type="date" class="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
                         </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">5. Байқау деңгейі</label>
+                                <select id="sel-level" class="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+                                    <option value="100" data-label="Халықаралық">Халықаралық (100б)</option>
+                                    <option value="80" data-label="Республикалық">Республикалық (80б)</option>
+                                    <option value="60" data-label="Облыстық">Облыстық (60б)</option>
+                                    <option value="40" data-label="Аудандық">Аудандық (40б)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">6. Алған орны</label>
+                                <select id="sel-place" class="w-full border p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+                                    <option value="100" data-place="Бас жүлде">Бас жүлде (100б)</option>
+                                    <option value="80" data-place="1-орын">1-орын (80б)</option>
+                                    <option value="60" data-place="2-орын">2-орын (60б)</option>
+                                    <option value="40" data-place="3-орын">3-орын (40б)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
                         <button onclick="registerAchievement()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95">Тіркеуді аяқтау</button>
                     </div>
                 </div>
@@ -339,6 +350,7 @@
                         <button onclick="setRatingView('school')" id="rtab-school" class="rating-tab whitespace-nowrap px-6 py-3 font-bold text-sm transition-all active">Мектептер</button>
                         <button onclick="setRatingView('teacher')" id="rtab-teacher" class="rating-tab whitespace-nowrap px-6 py-3 font-bold text-sm transition-all">Мұғалімдер</button>
                         <button onclick="setRatingView('student')" id="rtab-student" class="rating-tab whitespace-nowrap px-6 py-3 font-bold text-sm transition-all">Оқушылар</button>
+                        <button onclick="setRatingView('teacher-of-students')" id="rtab-teacher-of-students" class="rating-tab whitespace-nowrap px-6 py-3 font-bold text-sm transition-all">Мұғалімдер (Оқушы жет.)</button>
                     </div>
 
                     <div>
@@ -365,7 +377,12 @@
                     <h3 id="rating-title" class="text-xl font-bold text-slate-800 flex items-center">
                         <i class="fas fa-list-ol mr-3 text-blue-500"></i> Толық тізім
                     </h3>
-                    <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold uppercase" id="rating-count">... жазба</div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="exportToCSV()" class="bg-green-500 text-white px-4 py-1.5 rounded-full text-xs font-bold hover:bg-green-600 transition-all shadow-sm flex items-center">
+                            <i class="fas fa-file-excel mr-2"></i> Жүктеу (CSV)
+                        </button>
+                        <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold uppercase" id="rating-count">... жазба</div>
+                    </div>
                 </div>
                 <div id="rating-list-container" class="space-y-3 pb-10"></div>
             </div>
@@ -416,17 +433,10 @@
         renderAll();
     }
 
-    // Базаны толық тазарту функциясы
     window.clearAllData = () => {
-        if (!confirm('ЕСКЕРТУ: Барлық тіркелген деректер (мектептер, мұғалімдер, оқушылар және жетістіктер) біржола жойылады. Растайсыз ба?')) return;
-        
-        localStorage.removeItem('m_schools');
-        localStorage.removeItem('m_teachers');
-        localStorage.removeItem('m_students');
-        localStorage.removeItem('m_achievements');
-        
+        if (!confirm('ЕСКЕРТУ: Барлық тіркелген деректер біржола жойылады. Растайсыз ба?')) return;
+        localStorage.clear();
         data = { schools: [], teachers: [], students: [], achievements: [] };
-        
         showToast("Деректер қоры тазартылды");
         renderAll();
         switchTab('dashboard');
@@ -513,18 +523,33 @@
     window.registerAchievement = () => {
         const sch = document.getElementById('sel-school-final').value;
         const compName = document.getElementById('in-comp-name').value;
-        const score = parseInt(document.getElementById('sel-level').value);
-        const lvl = document.getElementById('sel-level').options[document.getElementById('sel-level').selectedIndex].text.split(' ')[0];
+        
+        // Scores
+        const levelSelect = document.getElementById('sel-level');
+        const levelScore = parseInt(levelSelect.value);
+        const levelLabel = levelSelect.options[levelSelect.selectedIndex].getAttribute('data-label');
+        
+        const placeSelect = document.getElementById('sel-place');
+        const placeScore = parseInt(placeSelect.value);
+        const placeLabel = placeSelect.options[placeSelect.selectedIndex].getAttribute('data-place');
+        
+        // Total Score Calculation (Sum of level and place)
+        const totalScore = levelScore + placeScore;
+        
+        const compDate = document.getElementById('in-comp-date').value;
         
         if (!compName) { showToast("Жарыс атауын жазыңыз"); return; }
+        if (!compDate) { showToast("Жарыс өткен күнін таңдаңыз"); return; }
 
         let payload = { 
             id: crypto.randomUUID(),
             type: currentAchType, 
             school: sch, 
-            level: lvl, 
-            score, 
+            level: levelLabel, 
+            score: totalScore, 
+            place: placeLabel,
             competitionName: compName,
+            competitionDate: compDate,
             timestamp: Date.now() 
         };
         
@@ -533,7 +558,9 @@
             const tId = document.getElementById('sel-teacher-final').value;
             if(!sId || !tId) return;
             const sObj = data.students.find(x => x.id === sId);
+            const tObj = data.teachers.find(x => x.id === tId);
             payload.ownerName = sObj.name;
+            payload.mentorName = tObj.name;
             payload.extra = `${sObj.class}-сынып`;
         } else {
             const tId = document.getElementById('sel-teacher-final').value;
@@ -546,6 +573,7 @@
         data.achievements.push(payload);
         showToast("Тіркелді");
         document.getElementById('in-comp-name').value = '';
+        document.getElementById('in-comp-date').value = '';
         saveToStorage();
         switchTab('dashboard');
     };
@@ -553,7 +581,6 @@
     window.showDetails = (targetName) => {
         const modal = document.getElementById('details-modal');
         const mTitle = document.getElementById('modal-title');
-        const mSub = document.getElementById('modal-subtitle');
         const mContent = document.getElementById('modal-content');
 
         const filters = { 
@@ -566,20 +593,21 @@
         let details = [];
         if (currentRatingView === 'school') {
             details = data.achievements.filter(a => a.school === targetName && filters[a.level]);
-            mTitle.innerText = targetName;
+        } else if (currentRatingView === 'teacher-of-students') {
+            details = data.achievements.filter(a => a.type === 'student' && a.mentorName === targetName && filters[a.level]);
         } else {
             details = data.achievements.filter(a => a.ownerName === targetName && filters[a.level]);
-            mTitle.innerText = targetName;
         }
 
+        mTitle.innerText = targetName;
         details.sort((a,b) => b.timestamp - a.timestamp);
         mContent.innerHTML = details.length ? details.map(d => `
-            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100 transition-colors">
+            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
                 <div class="flex items-center space-x-3">
-                    <div class="bg-blue-600 text-white w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shadow-sm">${d.level[0]}</div>
+                    <div class="bg-blue-600 text-white w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-bold uppercase">${d.level ? d.level[0] : 'Ж'}</div>
                     <div>
                         <p class="font-bold text-slate-800 text-sm">${d.competitionName}</p>
-                        <p class="text-[10px] text-slate-500">${d.level} | ${new Date(d.timestamp).toLocaleDateString()}</p>
+                        <p class="text-[10px] text-slate-500">${d.ownerName} | ${d.level} ${d.place ? ' | ' + d.place : ''} | ${d.competitionDate ? d.competitionDate : new Date(d.timestamp).toLocaleDateString()}</p>
                     </div>
                 </div>
                 <div class="text-right"><span class="font-black text-blue-600 text-base">${d.score}</span></div>
@@ -592,49 +620,30 @@
     window.closeModal = () => document.getElementById('details-modal').classList.add('hidden');
 
     function renderAll() {
+        // Stats
         document.getElementById('stat-students').innerText = data.students.length;
         document.getElementById('stat-teachers').innerText = data.teachers.length;
         document.getElementById('stat-schools').innerText = data.schools.length;
         document.getElementById('stat-achievements').innerText = data.achievements.length;
 
+        // Level counts
+        const lvlCounts = { 'Халықаралық': 0, 'Республикалық': 0, 'Облыстық': 0, 'Аудандық': 0 };
+        data.achievements.forEach(a => { if(lvlCounts[a.level] !== undefined) lvlCounts[a.level]++; });
+        document.getElementById('stat-lvl-intl').innerText = lvlCounts['Халықаралық'];
+        document.getElementById('stat-lvl-rep').innerText = lvlCounts['Республикалық'];
+        document.getElementById('stat-lvl-reg').innerText = lvlCounts['Облыстық'];
+        document.getElementById('stat-lvl-dist').innerText = lvlCounts['Аудандық'];
+
+        // Teacher category counts
         const catCounts = { 'Шебер': 0, 'Зерттеуші': 0, 'Сарапшы': 0, 'Модератор': 0, 'Педагог': 0 };
-        data.teachers.forEach(t => { if (catCounts.hasOwnProperty(t.category)) catCounts[t.category]++; });
-        Object.keys(catCounts).forEach(k => {
-            const map = {'Шебер':'sheber', 'Зерттеуші':'zertteushi', 'Сарапшы':'sarapshy', 'Модератор':'moderator', 'Педагог':'pedagog'};
-            if (document.getElementById(`count-cat-${map[k]}`)) document.getElementById(`count-cat-${map[k]}`).innerText = catCounts[k];
-        });
+        data.teachers.forEach(t => { if(catCounts[t.category] !== undefined) catCounts[t.category]++; });
+        document.getElementById('count-cat-sheber').innerText = catCounts['Шебер'];
+        document.getElementById('count-cat-zertteushi').innerText = catCounts['Зерттеуші'];
+        document.getElementById('count-cat-sarapshy').innerText = catCounts['Сарапшы'];
+        document.getElementById('count-cat-moderator').innerText = catCounts['Модератор'];
+        document.getElementById('count-cat-pedagog').innerText = catCounts['Педагог'];
 
-        const counts = { 'Халықаралық': 0, 'Республикалық': 0, 'Облыстық': 0, 'Аудандық': 0 };
-        data.achievements.forEach(a => { if(counts[a.level] !== undefined) counts[a.level]++; });
-        document.getElementById('stat-lvl-intl').innerText = counts['Халықаралық'];
-        document.getElementById('stat-lvl-rep').innerText = counts['Республикалық'];
-        document.getElementById('stat-lvl-reg').innerText = counts['Облыстық'];
-        document.getElementById('stat-lvl-dist').innerText = counts['Аудандық'];
-
-        document.getElementById('list-schools').innerHTML = data.schools.map(s => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-sm mb-1"><span>${s.name}</span><button onclick="removeItem('schools','${s.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></li>`).join('');
-        document.getElementById('list-teachers').innerHTML = data.teachers.map(t => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-xs mb-1"><span>${t.name} <span class="text-blue-500 font-bold">[${t.category}]</span></span><button onclick="removeItem('teachers','${t.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></li>`).join('');
-        document.getElementById('list-students').innerHTML = data.students.map(s => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-sm mb-1"><span>${s.name} (${s.class})</span><button onclick="removeItem('students','${s.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></li>`).join('');
-
-        const schOpt = '<option value="" disabled selected>Мектепті таңдаңыз</option>' + data.schools.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-        ['sel-school-teacher', 'sel-school-student', 'sel-school-final'].forEach(id => document.getElementById(id).innerHTML = schOpt);
-
-        const table = document.getElementById('activity-table');
-        table.innerHTML = [...data.achievements].sort((a,b)=>b.timestamp-a.timestamp).slice(0, 10).map(a => `
-            <tr class="text-sm border-b hover:bg-slate-50">
-                <td class="px-6 py-3">
-                    <div class="font-bold text-slate-800">${a.ownerName}</div>
-                    <div class="text-[10px] text-slate-500 italic mt-0.5"><i class="fas fa-trophy mr-1 text-amber-500"></i> ${a.competitionName}</div>
-                </td>
-                <td class="px-6 py-3 text-xs">
-                    <span class="block text-slate-700 font-medium">${a.school}</span>
-                    <span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded uppercase font-bold text-slate-500">${a.type === 'student' ? 'оқушы' : 'мұғалім'}</span>
-                </td>
-                <td class="px-6 py-3 text-blue-600 font-bold">${a.level}</td>
-                <td class="px-6 py-3 text-right font-black text-slate-800">${a.score}</td>
-                <td class="px-6 py-3 text-center"><button onclick="removeItem('achievements','${a.id}')" class="text-slate-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td>
-            </tr>
-        `).join('');
-
+        // Rating Lists Rendering
         const filters = { 
             'Халықаралық': document.getElementById('filter-intl').checked, 
             'Республикалық': document.getElementById('filter-rep').checked, 
@@ -648,41 +657,192 @@
         if (currentRatingView === 'school') {
             const schS = {}; data.schools.forEach(s => schS[s.name] = 0);
             filteredAch.forEach(a => { if(schS[a.school] !== undefined) schS[a.school] += a.score; });
-            results = Object.entries(schS).map(([name, score]) => ({ name, score, sub: 'Мектеп' }));
+            results = Object.entries(schS).map(([name, score]) => ({ 
+                name, score, sub: 'Мектеп' 
+            }));
         } else if (currentRatingView === 'teacher') {
             const tcS = {}; filteredAch.filter(a => a.type === 'teacher').forEach(a => { tcS[a.ownerName] = (tcS[a.ownerName] || 0) + a.score; });
             results = Object.entries(tcS).map(([name, score]) => {
                 const info = data.teachers.find(t => t.name === name);
-                return { name, score, sub: info ? `${info.category} | ${info.subj}` : 'Мұғалім' };
+                return { 
+                    name, score, 
+                    sub: info ? `${info.school} | ${info.category} | ${info.subj}` : 'Мұғалім' 
+                };
             });
         } else if (currentRatingView === 'student') {
             const stS = {}; filteredAch.filter(a => a.type === 'student').forEach(a => { stS[a.ownerName] = (stS[a.ownerName] || 0) + a.score; });
             results = Object.entries(stS).map(([name, score]) => {
                 const info = data.students.find(s => s.name === name);
-                return { name, score, sub: info ? `${info.class}-сынып` : 'Оқушы' };
+                return { 
+                    name, score, 
+                    sub: info ? `${info.school} | ${info.class}-сынып` : 'Оқушы' 
+                };
+            });
+        } else if (currentRatingView === 'teacher-of-students') {
+            const mentorS = {};
+            filteredAch.filter(a => a.type === 'student' && a.mentorName).forEach(a => {
+                mentorS[a.mentorName] = (mentorS[a.mentorName] || 0) + a.score;
+            });
+            results = Object.entries(mentorS).map(([name, score]) => {
+                const info = data.teachers.find(t => t.name === name);
+                return { 
+                    name, score, 
+                    sub: info ? `${info.school} | Жетекші: ${info.subj}` : 'Жетекші мұғалім' 
+                };
             });
         }
 
         results.sort((a, b) => b.score - a.score);
+        window.currentExportData = results;
         document.getElementById('rating-count').innerText = `${results.length} жазба`;
         document.getElementById('rating-list-container').innerHTML = results.length ? results.map((r, index) => `
             <div onclick="showDetails('${r.name}')" class="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group">
                 <div class="flex items-center space-x-4">
                     <div class="w-10 h-10 flex items-center justify-center rounded-full ${index < 3 ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-500'} font-bold text-sm shadow-sm">${index + 1}</div>
-                    <div><h4 class="font-bold text-slate-800 group-hover:text-blue-600">${r.name}</h4><p class="text-[10px] text-slate-400 uppercase font-bold">${r.sub}</p></div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 group-hover:text-blue-600">${r.name}</h4>
+                        <p class="text-[10px] text-slate-500 uppercase font-bold mt-0.5">${r.sub}</p>
+                    </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="text-right"><span class="text-xl font-black text-blue-600">${r.score}</span></div>
-                    <div class="bg-slate-50 p-2 rounded-lg"><i class="fas fa-chevron-right text-slate-300"></i></div>
+                    <div class="bg-slate-50 p-2 rounded-lg group-hover:bg-blue-50"><i class="fas fa-chevron-right text-slate-300 group-hover:text-blue-400"></i></div>
                 </div>
             </div>
         `).join('') : '<p class="text-center text-slate-400 py-10 italic">Деректер табылған жоқ</p>';
+
+        // Activity Table & Selects update
+        const table = document.getElementById('activity-table');
+        table.innerHTML = [...data.achievements].sort((a,b)=>b.timestamp-a.timestamp).slice(0, 10).map(a => `
+            <tr class="text-sm border-b hover:bg-slate-50">
+                <td class="px-6 py-3">
+                    <div class="font-bold text-slate-800">${a.ownerName}</div>
+                    <div class="text-[10px] text-slate-500 italic mt-0.5"><i class="fas fa-trophy mr-1 text-amber-500"></i> ${a.competitionName} ${a.place ? ' - ' + a.place : ''} ${a.competitionDate ? ' (' + a.competitionDate + ')' : ''}</div>
+                </td>
+                <td class="px-6 py-3 text-xs">
+                    <span class="block text-slate-700 font-medium">${a.school}</span>
+                    <span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded uppercase font-bold text-slate-500">${a.type === 'student' ? 'оқушы' : 'мұғалім'}</span>
+                </td>
+                <td class="px-6 py-3 text-blue-600 font-bold">${a.level}</td>
+                <td class="px-6 py-3 text-right font-black text-slate-800">${a.score}</td>
+                <td class="px-6 py-3 text-center"><button onclick="removeItem('achievements','${a.id}')" class="text-slate-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `).join('');
+
+        document.getElementById('list-schools').innerHTML = data.schools.map(s => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-sm mb-1"><span>${s.name}</span><button onclick="removeItem('schools','${s.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></li>`).join('');
+        document.getElementById('list-teachers').innerHTML = data.teachers.map(t => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-xs mb-1"><span>${t.name} <span class="text-blue-500 font-bold">[${t.category}]</span></span><button onclick="removeItem('teachers','${t.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></li>`).join('');
+        document.getElementById('list-students').innerHTML = data.students.map(s => `<li class="flex justify-between items-center p-2 bg-slate-50 rounded border text-sm mb-1"><span>${s.name} (${s.class})</span><button onclick="removeItem('students','${s.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></li>`).join('');
+
+        const schOpt = '<option value="" disabled selected>Мектепті таңдаңыз</option>' + data.schools.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+        ['sel-school-teacher', 'sel-school-student', 'sel-school-final'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = schOpt;
+        });
     }
 
     window.showToast = (m) => {
         const t = document.getElementById('toast');
         t.innerText = m; t.style.opacity = '1'; t.style.transform = 'translateY(0)';
         setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(10px)'; }, 2000);
+    };
+
+    window.exportToCSV = () => {
+        const filters = { 
+            'Халықаралық': document.getElementById('filter-intl').checked, 
+            'Республикалық': document.getElementById('filter-rep').checked, 
+            'Облыстық': document.getElementById('filter-reg').checked, 
+            'Аудандық': document.getElementById('filter-dist').checked 
+        };
+        const filteredAch = data.achievements.filter(a => filters[a.level]);
+
+        if (filteredAch.length === 0 && (!window.currentExportData || window.currentExportData.length === 0)) {
+            showToast("Жүктеу үшін деректер жоқ");
+            return;
+        }
+        
+        let csvContent = "\uFEFF"; // Excel-де қазақ әріптері дұрыс шығуы үшін
+        const sep = ";"; // Excel бағандарды дұрыс бөлуі үшін нүктелі үтір қолданылады
+        
+        if (currentRatingView === 'school') {
+            csvContent += `№${sep}Мектеп атауы${sep}Жалпы балл\n`;
+            window.currentExportData.forEach((row, index) => {
+                let name = `"${row.name.replace(/"/g, '""')}"`;
+                csvContent += `${index + 1}${sep}${name}${sep}${row.score}\n`;
+            });
+        } else if (currentRatingView === 'teacher') {
+            csvContent += `№${sep}Аты-жөні${sep}Пәні${sep}Санаты${sep}Мектеп атауы${sep}Байқау атауы${sep}Байқау деңгейі${sep}Алған орны${sep}Уақыты${sep}Баллы\n`;
+            let achs = filteredAch.filter(a => a.type === 'teacher');
+            achs.sort((a, b) => b.timestamp - a.timestamp);
+            achs.forEach((a, index) => {
+                const info = data.teachers.find(t => t.name === a.ownerName);
+                let name = `"${(a.ownerName || '').replace(/"/g, '""')}"`;
+                let subj = info ? `"${(info.subj || '').replace(/"/g, '""')}"` : '""';
+                let cat = info ? `"${(info.category || '').replace(/"/g, '""')}"` : '""';
+                let school = `"${(a.school || '').replace(/"/g, '""')}"`;
+                let compName = `"${(a.competitionName || '').replace(/"/g, '""')}"`;
+                let level = `"${(a.level || '').replace(/"/g, '""')}"`;
+                let place = `"${(a.place || '').replace(/"/g, '""')}"`;
+                let date = `"${(a.competitionDate || new Date(a.timestamp).toLocaleDateString()).replace(/"/g, '""')}"`;
+                
+                csvContent += `${index + 1}${sep}${name}${sep}${subj}${sep}${cat}${sep}${school}${sep}${compName}${sep}${level}${sep}${place}${sep}${date}${sep}${a.score}\n`;
+            });
+        } else if (currentRatingView === 'student') {
+            csvContent += `№${sep}Оқушы аты-жөні${sep}Сыныбы${sep}Мектеп атауы${sep}Жетекші мұғалім${sep}Байқау атауы${sep}Байқау деңгейі${sep}Алған орны${sep}Уақыты${sep}Баллы\n`;
+            let achs = filteredAch.filter(a => a.type === 'student');
+            achs.sort((a, b) => b.timestamp - a.timestamp);
+            achs.forEach((a, index) => {
+                const info = data.students.find(s => s.name === a.ownerName);
+                let name = `"${(a.ownerName || '').replace(/"/g, '""')}"`;
+                let cls = info ? `"${info.class}-сынып"` : '""';
+                let school = `"${(a.school || '').replace(/"/g, '""')}"`;
+                let mentor = `"${(a.mentorName || '').replace(/"/g, '""')}"`;
+                let compName = `"${(a.competitionName || '').replace(/"/g, '""')}"`;
+                let level = `"${(a.level || '').replace(/"/g, '""')}"`;
+                let place = `"${(a.place || '').replace(/"/g, '""')}"`;
+                let date = `"${(a.competitionDate || new Date(a.timestamp).toLocaleDateString()).replace(/"/g, '""')}"`;
+                
+                csvContent += `${index + 1}${sep}${name}${sep}${cls}${sep}${school}${sep}${mentor}${sep}${compName}${sep}${level}${sep}${place}${sep}${date}${sep}${a.score}\n`;
+            });
+        } else if (currentRatingView === 'teacher-of-students') {
+            csvContent += `№${sep}Жетекші мұғалім${sep}Пәні${sep}Санаты${sep}Мектеп атауы${sep}Оқушы аты-жөні${sep}Байқау атауы${sep}Байқау деңгейі${sep}Алған орны${sep}Уақыты${sep}Баллы\n`;
+            let achs = filteredAch.filter(a => a.type === 'student' && a.mentorName);
+            achs.sort((a, b) => b.timestamp - a.timestamp);
+            achs.forEach((a, index) => {
+                const info = data.teachers.find(t => t.name === a.mentorName);
+                let mentor = `"${(a.mentorName || '').replace(/"/g, '""')}"`;
+                let subj = info ? `"${(info.subj || '').replace(/"/g, '""')}"` : '""';
+                let cat = info ? `"${(info.category || '').replace(/"/g, '""')}"` : '""';
+                let school = `"${(a.school || '').replace(/"/g, '""')}"`;
+                let student = `"${(a.ownerName || '').replace(/"/g, '""')}"`;
+                let compName = `"${(a.competitionName || '').replace(/"/g, '""')}"`;
+                let level = `"${(a.level || '').replace(/"/g, '""')}"`;
+                let place = `"${(a.place || '').replace(/"/g, '""')}"`;
+                let date = `"${(a.competitionDate || new Date(a.timestamp).toLocaleDateString()).replace(/"/g, '""')}"`;
+                
+                csvContent += `${index + 1}${sep}${mentor}${sep}${subj}${sep}${cat}${sep}${school}${sep}${student}${sep}${compName}${sep}${level}${sep}${place}${sep}${date}${sep}${a.score}\n`;
+            });
+        }
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        
+        const titles = {
+            'school': 'Мектептер',
+            'teacher': 'Мұғалімдер',
+            'student': 'Оқушылар',
+            'teacher-of-students': 'Жетекші_мұғалімдер'
+        };
+        let fileName = `Рейтинг_${titles[currentRatingView]}_${new Date().toLocaleDateString()}.csv`;
+        
+        link.setAttribute("download", fileName);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showToast("Рейтинг сәтті жүктелді");
     };
 
     window.onload = renderAll;
